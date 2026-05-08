@@ -346,6 +346,7 @@ public partial class PetStoreDbContext : DbContext
             entity.HasOne(d => d.Address).WithMany(p => p.Suppliers)
                 .HasForeignKey(d => d.AddressId)
                 .HasConstraintName("FK__suppliers__addre__619B8048");
+            
         });
 
         modelBuilder.Entity<Transaction>(entity =>

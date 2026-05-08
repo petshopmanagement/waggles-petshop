@@ -1,5 +1,9 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PetManagementSystem.Api.Data;
+using PetManagementSystem.Api.Repositories;
+using PetManagementSystem.Api.Services;
+using System.Text.Json.Serialization;
 
 namespace PetManagementSystem.Api
 {
@@ -9,11 +13,18 @@ namespace PetManagementSystem.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+     .AddJsonOptions(opts =>
+     {
+
+         opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+     });
 
             builder.Services.AddDbContext<PetStoreDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            builder.Services.AddScoped<ISupplierService, SupplierService>();
+            builder.Services.AddScoped<ISupplierRepo, SupplierRepo>();
+            builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
