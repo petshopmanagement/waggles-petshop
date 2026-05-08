@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PetManagementSystem.Api.Data;
+
 
 namespace PetManagementSystem.Api
 {
@@ -11,8 +11,8 @@ namespace PetManagementSystem.Api
 
             builder.Services.AddControllers();
 
-            builder.Services.AddDbContext<PetStoreDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            //builder.Services.AddDbContext<PetStoreDbContext>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

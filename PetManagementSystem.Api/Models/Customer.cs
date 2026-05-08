@@ -17,6 +17,8 @@ public partial class Customer
 
     public int? AddressId { get; set; }
 
+    public string PasswordHash { get; set; } = null!;
+
     public virtual Address? Address { get; set; }
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
