@@ -57,7 +57,7 @@ namespace PetManagementSystem.Api.Controllers
         public async Task<IActionResult> GetPets(int id)
         {
             var pets = await _employeeService.GetPetsByEmpIdAsync(id);
-            if ( pets == null) return NotFound();
+            if (pets == null) return NotFound();
             return Ok(pets);
 
         }

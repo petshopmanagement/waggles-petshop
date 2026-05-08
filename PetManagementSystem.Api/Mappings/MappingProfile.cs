@@ -4,7 +4,7 @@ using PetManagementSystem.Api.Models;
 
 namespace PetManagementSystem.Api.Mappings
 {
-    public class MappingProfile : Profile 
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {
