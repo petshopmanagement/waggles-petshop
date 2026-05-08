@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Http;
-using PetManagementSystem.Api.DTOs;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PetManagementSystem.Api.DTOs;
+using PetManagementSystem.Api.DTOs.SupplierDtos;
 using PetManagementSystem.Api.Helpers;
-using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Services;
 
 namespace PetManagementSystem.Api.Controllers
@@ -11,62 +11,49 @@ namespace PetManagementSystem.Api.Controllers
     [ApiController]
     public class SupplierController : ControllerBase
     {
-
         private readonly ISupplierService _supplierService;
+
         public SupplierController(ISupplierService supplierService)
         {
             _supplierService = supplierService;
         }
 
-
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Supplier>>> GetSuppliers()
+        public async Task<ActionResult<ApiResponse<IEnumerable<SupplierDto>>>> GetSuppliers()
         {
             var suppliers = await _supplierService.GetAllSuppliersAsync();
-            return Ok(suppliers);
+            return Ok(ApiResponse<IEnumerable<SupplierDto>>.SuccessResponse(suppliers));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Supplier>> GetSupplier(int id)
+        public async Task<ActionResult<ApiResponse<SupplierDto>>> GetSupplier(int id)
         {
             var supplier = await _supplierService.GetSupplierByIdAsync(id);
-            if (supplier == null) return NotFound();
-            return Ok(supplier);
+            return Ok(ApiResponse<SupplierDto>.SuccessResponse(supplier));
         }
-
 
         [HttpPost]
-        public async Task<ActionResult<Supplier>> PostSupplier(CreateSupplierDto supplier)
+        public async Task<ActionResult<ApiResponse<SupplierDto>>> PostSupplier(CreateSupplierDto supplier)
         {
             var createdSupplier = await _supplierService.CreateSupplierAsync(supplier);
-            return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.SupplierId }, createdSupplier);
+            return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.SupplierId }, ApiResponse<SupplierDto>.SuccessResponse(createdSupplier));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSupplier(int id, UpdateSupplierDto supplier)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<ApiResponse<string>>> PatchSupplier(int id, [FromBody] JsonPatchDocument<UpdateSupplierDto> patchDoc)
         {
-            try
-            {
-                await _supplierService.UpdateSupplierAsync(id, supplier);
-            }
-            catch (ArgumentException)
-            {
-                return BadRequest();
-            }
-            return NoContent();
+            if (patchDoc == null)
+                return BadRequest(ApiResponse<string>.FailureResponse("Invalid patch document."));
+
+            await _supplierService.PatchSupplierAsync(id, patchDoc);
+            return Ok(ApiResponse<string>.SuccessResponse("Supplier updated successfully."));
         }
+
         [HttpGet("{id}/pets")]
-        public async Task<ActionResult<IEnumerable<PetDto>>> GetAllPets(int id)
+        public async Task<ActionResult<ApiResponse<IEnumerable<PetDto>>>> GetAllPets(int id)
         {
             var petDtos = await _supplierService.GetPetsAsync(id);
-
-            if (!petDtos.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(petDtos);
+            return Ok(ApiResponse<IEnumerable<PetDto>>.SuccessResponse(petDtos));
         }
     }
 }

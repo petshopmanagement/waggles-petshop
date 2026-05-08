@@ -38,13 +38,13 @@ public partial class PetStoreDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=petstore;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=.\\sqlexpress;Database=petstore;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Address>(entity =>
         {
-            entity.HasKey(e => e.AddressId).HasName("PK__addresse__CAA247C8DC188A5B");
+            entity.HasKey(e => e.AddressId).HasName("PK__addresse__CAA247C8A280BCD1");
 
             entity.ToTable("addresses");
 
@@ -69,7 +69,7 @@ public partial class PetStoreDbContext : DbContext
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__customer__CD65CB85CCE0D820");
+            entity.HasKey(e => e.CustomerId).HasName("PK__customer__CD65CB856C887B23");
 
             entity.ToTable("customers");
 
@@ -87,6 +87,9 @@ public partial class PetStoreDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("last_name");
+            entity.Property(e => e.PasswordHash)
+                .HasMaxLength(500)
+                .HasDefaultValue("");
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -94,12 +97,12 @@ public partial class PetStoreDbContext : DbContext
 
             entity.HasOne(d => d.Address).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.AddressId)
-                .HasConstraintName("FK__customers__addre__1332DBDC");
+                .HasConstraintName("FK__customers__addre__02084FDA");
         });
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PK__employee__C52E0BA8C91E4357");
+            entity.HasKey(e => e.EmployeeId).HasName("PK__employee__C52E0BA8C7556B13");
 
             entity.ToTable("employees");
 
@@ -118,6 +121,9 @@ public partial class PetStoreDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("last_name");
+            entity.Property(e => e.PasswordHash)
+                .HasMaxLength(500)
+                .HasDefaultValue("");
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -144,7 +150,7 @@ public partial class PetStoreDbContext : DbContext
                         .HasConstraintName("FK__employee___emplo__7A672E12"),
                     j =>
                     {
-                        j.HasKey("EmployeeId", "PetId").HasName("PK__employee__36BEC7F7B53D0E3A");
+                        j.HasKey("EmployeeId", "PetId").HasName("PK__employee__36BEC7F7F9D4599D");
                         j.ToTable("employee_pet_relationship");
                         j.IndexerProperty<int>("EmployeeId").HasColumnName("employee_id");
                         j.IndexerProperty<int>("PetId").HasColumnName("pet_id");
@@ -153,7 +159,7 @@ public partial class PetStoreDbContext : DbContext
 
         modelBuilder.Entity<GroomingService>(entity =>
         {
-            entity.HasKey(e => e.ServiceId).HasName("PK__grooming__3E0DB8AF5A6B6709");
+            entity.HasKey(e => e.ServiceId).HasName("PK__grooming__3E0DB8AFC7AB162A");
 
             entity.ToTable("grooming_services");
 
@@ -173,7 +179,7 @@ public partial class PetStoreDbContext : DbContext
 
         modelBuilder.Entity<Pet>(entity =>
         {
-            entity.HasKey(e => e.PetId).HasName("PK__pets__390CC5FE20913EEF");
+            entity.HasKey(e => e.PetId).HasName("PK__pets__390CC5FE4D4B018B");
 
             entity.ToTable("pets");
 
@@ -216,7 +222,7 @@ public partial class PetStoreDbContext : DbContext
                         .HasConstraintName("FK__pet_food___pet_i__72C60C4A"),
                     j =>
                     {
-                        j.HasKey("PetId", "FoodId").HasName("PK__pet_food__ABF801236242C6A8");
+                        j.HasKey("PetId", "FoodId").HasName("PK__pet_food__ABF80123CE22AD68");
                         j.ToTable("pet_food_relationship");
                         j.IndexerProperty<int>("PetId").HasColumnName("pet_id");
                         j.IndexerProperty<int>("FoodId").HasColumnName("food_id");
@@ -235,7 +241,7 @@ public partial class PetStoreDbContext : DbContext
                         .HasConstraintName("FK__pet_groom__pet_i__76969D2E"),
                     j =>
                     {
-                        j.HasKey("PetId", "ServiceId").HasName("PK__pet_groo__DAEC1E74D4B15534");
+                        j.HasKey("PetId", "ServiceId").HasName("PK__pet_groo__DAEC1E743568229D");
                         j.ToTable("pet_grooming_relationship");
                         j.IndexerProperty<int>("PetId").HasColumnName("pet_id");
                         j.IndexerProperty<int>("ServiceId").HasColumnName("service_id");
@@ -254,7 +260,7 @@ public partial class PetStoreDbContext : DbContext
                         .HasConstraintName("FK__pet_suppl__pet_i__7E37BEF6"),
                     j =>
                     {
-                        j.HasKey("PetId", "SupplierId").HasName("PK__pet_supp__AFE29CB0AD792EE4");
+                        j.HasKey("PetId", "SupplierId").HasName("PK__pet_supp__AFE29CB08E90EF56");
                         j.ToTable("pet_supplier_relationship");
                         j.IndexerProperty<int>("PetId").HasColumnName("pet_id");
                         j.IndexerProperty<int>("SupplierId").HasColumnName("supplier_id");
@@ -273,7 +279,7 @@ public partial class PetStoreDbContext : DbContext
                         .HasConstraintName("FK__pet_vacci__pet_i__6EF57B66"),
                     j =>
                     {
-                        j.HasKey("PetId", "VaccinationId").HasName("PK__pet_vacc__57544F00279F23EA");
+                        j.HasKey("PetId", "VaccinationId").HasName("PK__pet_vacc__57544F00801F72F5");
                         j.ToTable("pet_vaccination_relationship");
                         j.IndexerProperty<int>("PetId").HasColumnName("pet_id");
                         j.IndexerProperty<int>("VaccinationId").HasColumnName("vaccination_id");
@@ -282,7 +288,7 @@ public partial class PetStoreDbContext : DbContext
 
         modelBuilder.Entity<PetCategory>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__pet_cate__D54EE9B4BD7A9052");
+            entity.HasKey(e => e.CategoryId).HasName("PK__pet_cate__D54EE9B4E01FBAEB");
 
             entity.ToTable("pet_categories");
 
@@ -295,7 +301,7 @@ public partial class PetStoreDbContext : DbContext
 
         modelBuilder.Entity<PetFood>(entity =>
         {
-            entity.HasKey(e => e.FoodId).HasName("PK__pet_food__2F4C4DD8EA5EDFAF");
+            entity.HasKey(e => e.FoodId).HasName("PK__pet_food__2F4C4DD83275F8AA");
 
             entity.ToTable("pet_food");
 
@@ -320,7 +326,7 @@ public partial class PetStoreDbContext : DbContext
 
         modelBuilder.Entity<Supplier>(entity =>
         {
-            entity.HasKey(e => e.SupplierId).HasName("PK__supplier__6EE594E836077371");
+            entity.HasKey(e => e.SupplierId).HasName("PK__supplier__6EE594E8BB34685F");
 
             entity.ToTable("suppliers");
 
@@ -338,6 +344,9 @@ public partial class PetStoreDbContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.PasswordHash)
+                .HasMaxLength(500)
+                .HasDefaultValue("");
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -346,12 +355,11 @@ public partial class PetStoreDbContext : DbContext
             entity.HasOne(d => d.Address).WithMany(p => p.Suppliers)
                 .HasForeignKey(d => d.AddressId)
                 .HasConstraintName("FK__suppliers__addre__619B8048");
-            
         });
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__transact__85C600AF3B16D058");
+            entity.HasKey(e => e.TransactionId).HasName("PK__transact__85C600AF928A2DC4");
 
             entity.ToTable("transactions");
 
@@ -369,16 +377,16 @@ public partial class PetStoreDbContext : DbContext
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__transacti__custo__17036CC0");
+                .HasConstraintName("FK__transacti__custo__05D8E0BE");
 
             entity.HasOne(d => d.Pet).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.PetId)
-                .HasConstraintName("FK__transacti__pet_i__17F790F9");
+                .HasConstraintName("FK__transacti__pet_i__06CD04F7");
         });
 
         modelBuilder.Entity<Vaccination>(entity =>
         {
-            entity.HasKey(e => e.VaccinationId).HasName("PK__vaccinat__E588AFE71517E244");
+            entity.HasKey(e => e.VaccinationId).HasName("PK__vaccinat__E588AFE7B4018746");
 
             entity.ToTable("vaccinations");
 

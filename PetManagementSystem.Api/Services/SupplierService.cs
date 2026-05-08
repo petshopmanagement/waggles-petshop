@@ -1,6 +1,7 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.JsonPatch;
 using PetManagementSystem.Api.DTOs;
+using PetManagementSystem.Api.DTOs.SupplierDtos;
 using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Repositories;
@@ -11,10 +12,12 @@ namespace PetManagementSystem.Api.Services
     {
         private readonly ISupplierRepo _repository;
         private readonly IMapper _mapper;
-        public SupplierService(ISupplierRepo repository, IMapper mapper)
+        private readonly ILogger<SupplierService> _logger;
+        public SupplierService(ISupplierRepo repository, IMapper mapper, ILogger<SupplierService> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<IEnumerable<SupplierDto>> GetAllSuppliersAsync()
         {
@@ -33,17 +36,23 @@ namespace PetManagementSystem.Api.Services
         {
             var supplierEntity = _mapper.Map<Supplier>(dto);
             var createdSupplier = await _repository.AddAsync(supplierEntity);
+            _logger.LogInformation("Created new supplier: {SupplierName}", createdSupplier.Name);
             return _mapper.Map<SupplierDto>(createdSupplier);
         }
-        public async Task UpdateSupplierAsync(int id, UpdateSupplierDto dto)
+
+        public async Task PatchSupplierAsync(int id, JsonPatchDocument<UpdateSupplierDto> patchDoc)
         {
             var existingSupplier = await _repository.GetByIdAsync(id);
             if (existingSupplier == null) throw new SupplierNotFoundException("Supplier not found");
 
-            _mapper.Map(dto, existingSupplier);
+            var dto = _mapper.Map<UpdateSupplierDto>(existingSupplier);
+            patchDoc.ApplyTo(dto);
 
+            _mapper.Map(dto, existingSupplier);
             await _repository.UpdateAsync(existingSupplier);
+            _logger.LogInformation("Patched supplier with ID: {SupplierId}", id);
         }
+
         public async Task<IEnumerable<PetDto>> GetPetsAsync(int id)
         {
             var pets = await _repository.GetAllPetsAsync(id);

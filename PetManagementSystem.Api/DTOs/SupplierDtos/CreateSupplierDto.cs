@@ -1,9 +1,8 @@
-﻿namespace PetManagementSystem.Api.DTOs
+﻿namespace PetManagementSystem.Api.DTOs.SupplierDtos
 {
-    public class SupplierDto
+    public class CreateSupplierDto
     {
-        public int SupplierId { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = null!;
         public string? ContactPerson { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Email { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace PetManagementSystem.Api.DTOs
+﻿namespace PetManagementSystem.Api.DTOs.SupplierDtos
 {
     public class UpdateSupplierDto
     {
