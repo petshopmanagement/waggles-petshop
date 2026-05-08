@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PetManagementSystem.Api.Data;
-
+using PetManagementSystem.Api.Mappings;
+using PetManagementSystem.Api.Repositories;
+using PetManagementSystem.Api.Services;
 namespace PetManagementSystem.Api
 {
     public class Program
@@ -13,6 +15,11 @@ namespace PetManagementSystem.Api
 
             builder.Services.AddDbContext<PetStoreDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
