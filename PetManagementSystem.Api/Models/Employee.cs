@@ -21,6 +21,8 @@ public partial class Employee
 
     public int? AddressId { get; set; }
 
+    public string PasswordHash { get; set; } = null!;
+
     public virtual Address? Address { get; set; }
 
     public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
