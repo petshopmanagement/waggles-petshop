@@ -32,22 +32,22 @@ public class GlobalExceptionMiddleware
 
             switch (error)
             {
-                case InvalidCredentialsException e:
+                case InvalidCredentialsException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     break;
-                case InvalidRoleException e:
+                case InvalidRoleException:
+                case InvalidTransactionStatusException:
+                case ArgumentException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     break;
-                case EmailAlreadyExistsException e:
+                case EmailAlreadyExistsException:
                     response.StatusCode = (int)HttpStatusCode.Conflict;
                     break;
-                case CustomerNotFoundException e:
+                case TransactionNotFoundException:
+                case CustomerNotFoundException:
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     break;
-                case AppException e:
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    break;
-                case ArgumentException e:
+                case AppException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     break;
                 default:
