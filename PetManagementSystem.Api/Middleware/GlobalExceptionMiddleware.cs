@@ -1,26 +1,30 @@
-﻿using PetManagementSystem.Api.Exceptions;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
+using PetManagementSystem.Api.Exceptions;
 
 namespace PetManagementSystem.Api.Middleware
 {
-    public class GlobalExceptionMiddleware
-    {
-        private readonly RequestDelegate _next;
+public class GlobalExceptionMiddleware
+{
+    private readonly RequestDelegate _next;
 
-        public GlobalExceptionMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+    public GlobalExceptionMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
 
         public async Task InvokeAsync(HttpContext context)
+    {
+        try
         {
-            try
-            {
-                await _next(context);
-            }
+            await _next(context);
+        }
             catch (Exception ex)
-            {
+        {
                 await HandleExceptionAsync(context, ex);
             }
         }

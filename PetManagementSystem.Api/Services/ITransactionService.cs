@@ -1,0 +1,15 @@
+﻿using PetManagementSystem.Api.DTOs;
+
+namespace PetManagementSystem.Api.Services;
+
+public interface ITransactionService
+{
+    Task<IEnumerable<TransactionDto>> GetAllAsync();
+    Task<TransactionDto> GetByIdAsync(int id);               // throws TransactionNotFoundException
+    Task<IEnumerable<TransactionDto>> GetByCustomerAsync(int customerId);
+    Task<IEnumerable<TransactionDto>> GetByPetAsync(int petId);
+    Task<decimal> GetTotalRevenueAsync();
+    Task<SalesSummaryDto> GetSalesSummaryAsync();
+    Task<TransactionDto> CreateAsync(CreateTransactionDto dto);
+    Task<TransactionDto> UpdateStatusAsync(int id, UpdateTransactionStatusDto dto); // throws if not found
+}
