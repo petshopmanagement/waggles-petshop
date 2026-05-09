@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,7 +11,9 @@ using PetManagementSystem.Api.Mappings;
 using PetManagementSystem.Api.Middleware;
 using PetManagementSystem.Api.Repositories;
 using PetManagementSystem.Api.Services;
+using Serilog;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace PetManagementSystem.Api
 {
@@ -20,37 +23,54 @@ namespace PetManagementSystem.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Controllers
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .WriteTo.Console()
+                .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
+
+           
             builder.Services.AddControllers()
+                .AddNewtonsoftJson()
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.ReferenceHandler =
-                        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                        ReferenceHandler.IgnoreCycles;
 
                     options.JsonSerializerOptions.DefaultIgnoreCondition =
-                        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                        JsonIgnoreCondition.WhenWritingNull;
                 });
 
-            // DbContext
             builder.Services.AddDbContext<PetStoreDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // AutoMapper
+            // =========================
+            // AUTOMAPPER
+            // =========================
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-            // FluentValidation
+            // =========================
+            // FLUENT VALIDATION
+            // =========================
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-            // Repositories
+            // =========================
+            // REPOSITORIES
+            // =========================
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddScoped<IVaccinationRepository, VaccinationRepository>();
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-           
+            builder.Services.AddScoped<ISupplierRepo, SupplierRepo>();
+            builder.Services.AddScoped<IGroomingServiceRepo, GroomingServiceRepo>();
 
-            // Services
+            // =========================
+            // SERVICES
+            // =========================
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IVaccinationService, VaccinationService>();
@@ -58,7 +78,12 @@ namespace PetManagementSystem.Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<JwtHelper>();
 
-            // JWT
+            builder.Services.AddScoped<ISupplierService, SupplierService>();
+            builder.Services.AddScoped<IGroomingServiceService, GroomingServiceService>();
+
+            // =========================
+            // JWT CONFIG
+            // =========================
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var secretKey = jwtSettings["Key"] ?? "super_secret_key_that_is_long_enough_for_hmac_sha256";
 
@@ -88,8 +113,11 @@ namespace PetManagementSystem.Api
                 };
             });
 
-            // Swagger
+            // =========================
+            // SWAGGER
+            // =========================
             builder.Services.AddEndpointsApiExplorer();
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -124,8 +152,15 @@ namespace PetManagementSystem.Api
                 });
             });
 
+            // =========================
+            // BUILD APP
+            // =========================
             var app = builder.Build();
 
+            // =========================
+            // MIDDLEWARE PIPELINE
+            // =========================
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseMiddleware<GlobalExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
