@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -8,24 +7,28 @@ using PetManagementSystem.Api.Exceptions;
 
 namespace PetManagementSystem.Api.Middleware
 {
-public class GlobalExceptionMiddleware
-{
-    private readonly RequestDelegate _next;
-
-    public GlobalExceptionMiddleware(RequestDelegate next)
+    public class GlobalExceptionMiddleware
     {
-        _next = next;
-    }
+        private readonly RequestDelegate _next;
 
-        public async Task InvokeAsync(HttpContext context)
-    {
-        try
+        public GlobalExceptionMiddleware(
+            RequestDelegate next)
         {
-            await _next(context);
+            _next = next;
         }
-            catch (Exception ex)
+
+        public async Task InvokeAsync(
+            HttpContext context)
         {
-                await HandleExceptionAsync(context, ex);
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                await HandleExceptionAsync(
+                    context,
+                    ex);
             }
         }
 
@@ -33,33 +36,79 @@ public class GlobalExceptionMiddleware
             HttpContext context,
             Exception exception)
         {
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType =
+                "application/json";
 
             var statusCode = exception switch
             {
+                // ===============================
+                // Not Found Exceptions
+                // ===============================
+                NotFoundException => (int)HttpStatusCode.NotFound,
+                ResourceNotFoundException => (int)HttpStatusCode.NotFound,
                 EmployeeNotFoundException => (int)HttpStatusCode.NotFound,
                 VaccinationNotFoundException => (int)HttpStatusCode.NotFound,
 
+                // ===============================
+                // Bad Request Exceptions
+                // ===============================
+                BadRequestException => (int)HttpStatusCode.BadRequest,
+                ValidationException => (int)HttpStatusCode.BadRequest,
                 EmployeeValidationException => (int)HttpStatusCode.BadRequest,
                 VaccinationValidationException => (int)HttpStatusCode.BadRequest,
                 ArgumentException => (int)HttpStatusCode.BadRequest,
 
+                // ===============================
+                // Unauthorized Access
+                // ===============================
+                UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
+
+                // ===============================
+                // Internal Server Error
+                // ===============================
                 _ => (int)HttpStatusCode.InternalServerError
             };
 
-            context.Response.StatusCode = statusCode;
+            context.Response.StatusCode =
+                statusCode;
 
-            var response = new
+            object response;
+
+            // ===============================
+            // Special Handling for ValidationException
+            // ===============================
+            if (exception is ValidationException validationException)
             {
-                success = false,
-                message = statusCode == (int)HttpStatusCode.InternalServerError
-                    ? "An internal server error occurred."
-                    : exception.Message
-            };
+                response = new
+                {
+                    success = false,
+                    statusCode = statusCode,
+                    message = "Validation failed",
+                    errors = validationException.Errors,
+                    traceId = context.TraceIdentifier
+                };
+            }
+            else
+            {
+                response = new
+                {
+                    success = false,
+                    statusCode = statusCode,
+                    message =
+                        statusCode ==
+                        (int)HttpStatusCode.InternalServerError
+                            ? "Internal Server Error."
+                            : exception.Message,
+                    traceId =
+                        context.TraceIdentifier
+                };
+            }
 
-            var json = JsonSerializer.Serialize(response);
+            var json =
+                JsonSerializer.Serialize(response);
 
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsync(
+                json);
         }
     }
 }

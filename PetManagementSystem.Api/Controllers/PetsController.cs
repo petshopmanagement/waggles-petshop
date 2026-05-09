@@ -1,0 +1,100 @@
+using Microsoft.AspNetCore.Mvc;
+using PetManagementSystem.Api.DTOs;
+using PetManagementSystem.Api.Services;
+
+namespace PetManagementSystem.Api.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PetsController : ControllerBase
+    {
+        private readonly IPetService _service;
+
+        public PetsController(IPetService service)
+        {
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PetDTO>>> GetAllPets()
+        {
+            var pets = await _service.GetAllPets();
+            return Ok(pets);
+        }
+
+        [HttpGet("{petid}")]
+        public async Task<ActionResult<PetDTO>> GetPet(int petid)
+        {
+            var pet = await _service.GetPetById(petid);
+            return Ok(pet);
+        }
+
+        [HttpGet("category/{categoryId}")]
+        public async Task<ActionResult<IEnumerable<PetDTO>>> GetPetByCategory(int categoryId)
+        {
+            var pets = await _service.GetPetByCategory(categoryId);
+            return Ok(pets);
+        }
+
+        [HttpGet("name/{name}")]
+        public async Task<ActionResult<IEnumerable<PetDTO>>> GetPetByName(string name)
+        {
+            var pets = await _service.GetPetByName(name);
+            return Ok(pets);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<PetDTO>> PostPet([FromBody] PetCreate dto)
+        {
+            var createdPet = await _service.AddPet(dto);
+
+            return CreatedAtAction(
+                nameof(GetPet),
+                new { petid = createdPet.PetId },
+                createdPet
+            );
+        }
+
+        [HttpPut("{petid}")]
+        public async Task<IActionResult> PutPet(int petid, [FromBody] PetUpdate dto)
+        {
+            await _service.UpdatePet(petid, dto);
+            return NoContent();
+        }
+
+        [HttpGet("{petId}/suppliers")]
+        public async Task<ActionResult<IEnumerable<SupplierDTO>>> GetSupplierPetById(int petId)
+        {
+            var suppliers = await _service.GetSuppliersByPetIdService(petId);
+            return Ok(suppliers);
+        }
+
+        [HttpGet("{petId}/employees")]
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetEmployeeByPetId(int petId)
+        {
+            var employees = await _service.GetEmployeeByPetIdService(petId);
+            return Ok(employees);
+        }
+
+        [HttpGet("transactions/{petId}")]
+        public async Task<ActionResult<IEnumerable<TransactionDto>>> GetTransactionsByPetId(int petId)
+        {
+            var result = await _service.GetTrasactionbypetID(petId);
+            return Ok(result);
+        }
+
+        [HttpGet("groomings/{petId}")]
+        public async Task<ActionResult<IEnumerable<GroomingDTO>>> GetGroomingsByPetId(int petId)
+        {
+            var result = await _service.GetGroomingsByPetId(petId);
+            return Ok(result);
+        }
+
+        [HttpGet("vaccinations/{petId}")]
+        public async Task<ActionResult<IEnumerable<VaccinationDTO>>> GetVaccinationByPetId(int petId)
+        {
+            var result = await _service.GetVaccinationByPetId(petId);
+            return Ok(result);
+        }
+    }
+}

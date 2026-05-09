@@ -2,6 +2,10 @@ using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -11,6 +15,7 @@ using PetManagementSystem.Api.Mappings;
 using PetManagementSystem.Api.Middleware;
 using PetManagementSystem.Api.Repositories;
 using PetManagementSystem.Api.Services;
+using PetManagementSystem.Api.Validators;
 using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -23,6 +28,9 @@ namespace PetManagementSystem.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // =========================
+            // SERILOG CONFIGURATION
+            // =========================
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration)
                 .WriteTo.Console()
@@ -31,7 +39,9 @@ namespace PetManagementSystem.Api
 
             builder.Host.UseSerilog();
 
-           
+            // =========================
+            // CONTROLLERS + JSON OPTIONS
+            // =========================
             builder.Services.AddControllers()
                 .AddNewtonsoftJson()
                 .AddJsonOptions(options =>
@@ -43,6 +53,9 @@ namespace PetManagementSystem.Api
                         JsonIgnoreCondition.WhenWritingNull;
                 });
 
+            // =========================
+            // DATABASE CONTEXT
+            // =========================
             builder.Services.AddDbContext<PetStoreDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -51,16 +64,18 @@ namespace PetManagementSystem.Api
             // AUTOMAPPER
             // =========================
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.AddAutoMapper(typeof(Program));
 
-            // =========================
-            // FLUENT VALIDATION
-            // =========================
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+            //builder.Services.AddValidatorsFromAssemblyContaining<PetCreateDTOValidator>();
 
             // =========================
             // REPOSITORIES
             // =========================
+            builder.Services.AddScoped<IPetRepository, PetRepository>();
+            builder.Services.AddScoped<IFoodRepo, FoodRepo>();
+
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddScoped<IVaccinationRepository, VaccinationRepository>();
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -68,9 +83,9 @@ namespace PetManagementSystem.Api
             builder.Services.AddScoped<ISupplierRepo, SupplierRepo>();
             builder.Services.AddScoped<IGroomingServiceRepo, GroomingServiceRepo>();
 
-            // =========================
-            // SERVICES
-            // =========================
+            builder.Services.AddScoped<IPetService, PetService>();
+            builder.Services.AddScoped<IFoodService, FoodService>();
+
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IVaccinationService, VaccinationService>();
@@ -81,79 +96,94 @@ namespace PetManagementSystem.Api
             builder.Services.AddScoped<ISupplierService, SupplierService>();
             builder.Services.AddScoped<IGroomingServiceService, GroomingServiceService>();
 
-            // =========================
-            // JWT CONFIG
-            // =========================
+            
             var jwtSettings = builder.Configuration.GetSection("Jwt");
-            var secretKey = jwtSettings["Key"] ?? "super_secret_key_that_is_long_enough_for_hmac_sha256";
+            var secretKey =
+                jwtSettings["Key"] ??
+                "super_secret_key_that_is_long_enough_for_hmac_sha256";
 
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+
+                options.DefaultChallengeScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(secretKey)),
 
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtSettings["Issuer"] ?? "PetStoreApi",
+                options.TokenValidationParameters =
+                    new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(secretKey)),
 
-                    ValidateAudience = true,
-                    ValidAudience = jwtSettings["Audience"] ?? "PetStoreClients",
+                        ValidateIssuer = true,
+                        ValidIssuer =
+                            jwtSettings["Issuer"] ??
+                            "PetStoreApi",
 
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
+                        ValidateAudience = true,
+                        ValidAudience =
+                            jwtSettings["Audience"] ??
+                            "PetStoreClients",
+
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
             });
 
-            // =========================
-            // SWAGGER
-            // =========================
+            
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Waggles Pet Shop API",
-                    Version = "v1",
-                    Description = "Enterprise Pet Management System REST API"
-                });
-
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using Bearer. Example: 'Bearer {token}'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
+                c.SwaggerDoc("v1",
+                    new OpenApiInfo
                     {
-                        new OpenApiSecurityScheme
+                        Title = "Waggles Pet Shop API",
+                        Version = "v1",
+                        Description =
+                            "Enterprise Pet Management System REST API"
+                    });
+
+                c.AddSecurityDefinition("Bearer",
+                    new OpenApiSecurityScheme
+                    {
+                        Description =
+                            "JWT Authorization header using Bearer. Example: 'Bearer {token}'",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer"
+                    });
+
+                c.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement
+                    {
                         {
-                            Reference = new OpenApiReference
+                            new OpenApiSecurityScheme
                             {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new List<string>()
-                    }
-                });
+                                Reference =
+                                    new OpenApiReference
+                                    {
+                                        Type =
+                                            ReferenceType.SecurityScheme,
+                                        Id = "Bearer"
+                                    }
+                            },
+                            new List<string>()
+                        }
+                    });
             });
 
             // =========================
-            // BUILD APP
+            // BUILD APPLICATION
             // =========================
             var app = builder.Build();
 
