@@ -13,7 +13,7 @@ public class CustomersController : ControllerBase
     private readonly ICustomerService _service;
     public CustomersController(ICustomerService service) => _service = service;
 
-    [Authorize(Roles = "Employee")]
+    [Authorize(Roles = "Employee, Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
 
@@ -56,7 +56,7 @@ public class CustomersController : ControllerBase
         return updatedProfile == null ? NotFound() : Ok(updatedProfile);
     }
 
-    [Authorize(Roles = "Employee")]
+    [Authorize(Roles = "Employee,Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

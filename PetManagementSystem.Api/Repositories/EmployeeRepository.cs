@@ -59,6 +59,10 @@ namespace PetManagementSystem.Api.Repositories
 
         }
 
+        public async Task<Employee?> GetByEmailAsync(string email)
+        {
+            return await _context.Employees.FirstOrDefaultAsync(c => c.Email == email);
+        }
 
     }
 }
