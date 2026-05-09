@@ -5,6 +5,7 @@ using PetManagementSystem.Api.Repositories;
 using PetManagementSystem.Api.Services;
 using PetManagementSystem.Api.Validators;
 using System.Text.Json.Serialization;
+using PetManagementSystem.Api.Middleware;
 
 namespace PetManagementSystem.Api
 {
@@ -42,6 +43,8 @@ namespace PetManagementSystem.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseMiddleware<GlobalExceptionMiddleware>();
 
             app.UseAuthorization();
 

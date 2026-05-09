@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
 using PetManagementSystem.Api.DTOs;
+using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Repositories;
+
 namespace PetManagementSystem.Api.Services
 {
     public class PetService : IPetService
     {
         private readonly IPetRepository _repository;
         private readonly IMapper _mapper;
-
 
         public PetService(IPetRepository repository, IMapper mapper)
         {
@@ -19,100 +20,121 @@ namespace PetManagementSystem.Api.Services
         public async Task<IEnumerable<PetDTO>> GetAllPets()
         {
             var pets = await _repository.GetAllPets();
-            //return pets.Select(p => new PetDTO
-            //{
-            //    Name = p.Name,
-            //    Price = p.Price,
-            //    Age = p.Age,
-            //    Description = p.Description,
-            //    Breed = p.Breed,
-            //    ImageUrl = p.ImageUrl
-            //});
+
+            if (pets == null || !pets.Any())
+            {
+                throw new NotFoundException("No pets found.");
+            }
 
             return _mapper.Map<IEnumerable<PetDTO>>(pets);
         }
 
         public async Task<PetDTO?> GetPetById(int petid)
         {
+            if (petid <= 0)
+            {
+                throw new BadRequestException("Pet Id must be greater than 0.");
+            }
+
             var pet = await _repository.GetPetById(petid);
 
             if (pet == null)
-                return null;
+            {
+                throw new NotFoundException("Pet not found.");
+            }
 
-            //return new PetDTO
-            //{
-            //    Name = pet.Name,
-            //    Price = pet.Price,
-            //    Age = pet.Age,
-            //    Description = pet.Description,
-            //    Breed = pet.Breed,
-            //    ImageUrl = pet.ImageUrl
-            //};
             return _mapper.Map<PetDTO>(pet);
         }
+
         public async Task<IEnumerable<PetDTO>> GetPetByCategory(int categoryId)
         {
+            if (categoryId <= 0)
+            {
+                throw new BadRequestException("Category Id must be greater than 0.");
+            }
+
             var pets = await _repository.GetPetByCategory(categoryId);
 
-            //return pets.Select(p => new PetDTO
-            //{
-            //    Name = p.Name,
-            //    Price = p.Price,
-            //    Age = p.Age,
-            //    Description = p.Description,
-            //    Breed = p.Breed,
-            //    ImageUrl = p.ImageUrl
-            //});
+            if (pets == null || !pets.Any())
+            {
+                throw new NotFoundException("No pets found in this category.");
+            }
+
             return _mapper.Map<IEnumerable<PetDTO>>(pets);
         }
 
-
-
         public async Task<IEnumerable<PetDTO>> GetPetByName(string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new BadRequestException("Pet name is required.");
+            }
+
             var pets = await _repository.GetPetByName(name);
 
-            //return pets.Select(p => new PetDTO
-            //{
-            //    Name = p.Name,
-            //    Price = p.Price,
-            //    Age = p.Age,
-            //    Description = p.Description,
-            //    Breed = p.Breed,
-            //    ImageUrl = p.ImageUrl
-            //});
+            if (pets == null || !pets.Any())
+            {
+                throw new NotFoundException("No pets found with this name.");
+            }
+
             return _mapper.Map<IEnumerable<PetDTO>>(pets);
         }
 
         public async Task<PetDTO> AddPet(PetCreate dto)
         {
+            if (dto == null)
+            {
+                throw new BadRequestException("Pet data is required.");
+            }
+
             var pet = _mapper.Map<Pet>(dto);
 
             await _repository.AddPet(pet);
 
             return _mapper.Map<PetDTO>(pet);
-
         }
+
         public async Task UpdatePet(int petid, PetUpdate dto)
         {
-            if (petid != dto.PetId)
+            if (dto == null)
             {
-                throw new ArgumentException("Pet ID mismatch");
+                throw new BadRequestException("Pet update data is required.");
             }
 
-            var pet = _mapper.Map<Pet>(dto);
+            if (petid <= 0)
+            {
+                throw new BadRequestException("Pet Id must be greater than 0.");
+            }
 
-            await _repository.UpdatePet(pet);
+            if (petid != dto.PetId)
+            {
+                throw new BadRequestException("Pet ID mismatch.");
+            }
 
+            var existingPet = await _repository.GetPetById(petid);
+
+            if (existingPet == null)
+            {
+                throw new NotFoundException("Pet not found.");
+            }
+
+            _mapper.Map(dto, existingPet);
+
+            await _repository.UpdatePet(existingPet);
         }
 
         public async Task<IEnumerable<SupplierDTO>> GetSuppliersByPetIdService(int petId)
         {
+            if (petId <= 0)
+            {
+                throw new BadRequestException("Pet Id must be greater than 0.");
+            }
+
             var suppliers = await _repository.GetSuppliersByPetId(petId);
 
-            if (suppliers == null)
+            if (suppliers == null || !suppliers.Any())
             {
-                return Enumerable.Empty<SupplierDTO>();
+                throw new NotFoundException("No suppliers found for this pet.");
             }
 
             return _mapper.Map<IEnumerable<SupplierDTO>>(suppliers);
@@ -120,33 +142,68 @@ namespace PetManagementSystem.Api.Services
 
         public async Task<IEnumerable<EmployeeDTO>> GetEmployeeByPetIdService(int petId)
         {
-            var employees = await _repository.GetEmployeeById(petId);
-            if (employees == null)
+            if (petId <= 0)
             {
-                return Enumerable.Empty<EmployeeDTO>();
+                throw new BadRequestException("Pet Id must be greater than 0.");
             }
+
+            var employees = await _repository.GetEmployeeById(petId);
+
+            if (employees == null || !employees.Any())
+            {
+                throw new NotFoundException("No employees found for this pet.");
+            }
+
             return _mapper.Map<IEnumerable<EmployeeDTO>>(employees);
         }
 
         public async Task<IEnumerable<TransactionDto>> GetTrasactionbypetID(int petId)
         {
+            if (petId <= 0)
+            {
+                throw new BadRequestException("Pet Id must be greater than 0.");
+            }
+
             var transactions = await _repository.GetTransactionByPetId(petId);
+
+            if (transactions == null || !transactions.Any())
+            {
+                throw new NotFoundException("No transactions found for this pet.");
+            }
 
             return _mapper.Map<IEnumerable<TransactionDto>>(transactions);
         }
 
         public async Task<IEnumerable<VaccinationDTO>> GetVaccinationByPetId(int petId)
         {
+            if (petId <= 0)
+            {
+                throw new BadRequestException("Pet Id must be greater than 0.");
+            }
+
             var vaccinations = await _repository.GetVaccinationByPetId(petId);
+
+            if (vaccinations == null || !vaccinations.Any())
+            {
+                throw new NotFoundException("No vaccinations found for this pet.");
+            }
 
             return _mapper.Map<IEnumerable<VaccinationDTO>>(vaccinations);
         }
 
-        
-
         public async Task<IEnumerable<GroomingDTO>> GetGroomingsByPetId(int petId)
         {
+            if (petId <= 0)
+            {
+                throw new BadRequestException("Pet Id must be greater than 0.");
+            }
+
             var groomings = await _repository.GetGroomingsByPetId(petId);
+
+            if (groomings == null || !groomings.Any())
+            {
+                throw new NotFoundException("No groomings found for this pet.");
+            }
 
             return _mapper.Map<IEnumerable<GroomingDTO>>(groomings);
         }
