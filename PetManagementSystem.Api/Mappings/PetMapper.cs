@@ -26,6 +26,12 @@ namespace PetManagementSystem.Api.Mappings
             CreateMap<GroomingDTO, GroomingService>();
             CreateMap<Vaccination, VaccinationDTO>();
             CreateMap<VaccinationDTO, Vaccination>();
+
+            CreateMap<PetFood, FoodDTO>().ReverseMap();
+
+            CreateMap<CreatePetFoodDto, PetFood>();
+
+            CreateMap<UpdatePetFoodDto, PetFood>();
         }
     }
 }
