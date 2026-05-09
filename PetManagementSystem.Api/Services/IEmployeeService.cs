@@ -8,6 +8,7 @@ namespace PetManagementSystem.Api.Services
         Task<EmployeeDto> GetEmpByIdAsync(int id);
         Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto dto);
         Task<EmployeeDto> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto);
+        Task<EmployeeDto?> PatchEmployeeAsync(int id, UpdateEmployeeDto dto);
         Task<IEnumerable<PetDto>> GetPetsByEmpIdAsync(int id); 
     }
 }

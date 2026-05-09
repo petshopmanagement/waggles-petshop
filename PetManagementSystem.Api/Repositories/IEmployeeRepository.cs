@@ -7,7 +7,7 @@ namespace PetManagementSystem.Api.Repositories
         Task<IEnumerable<Employee>> GetAllAsync();
         Task<Employee?> GetEmpByIdAsync(int id);
         Task<Employee?> CreateAsync(Employee employee);
-        Task<Employee?> UpdateAsync(Employee employee);
+        Task<Employee?> UpdateAsync(int id, Employee employee);
         Task<IEnumerable<Pet>> GetEmployeeWithPetsAsync(int id);
     }
 }

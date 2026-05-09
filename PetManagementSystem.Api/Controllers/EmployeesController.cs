@@ -47,9 +47,15 @@ namespace PetManagementSystem.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeDto dto)
         {
-            var updated = await _employeeService.UpdateEmployeeAsync(id, dto);
-            if (updated == null) return NotFound();
-            return NoContent();
+            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, dto);
+            return Ok(updatedEmployee);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchEmployee(int id, UpdateEmployeeDto dto)
+        {
+            var updatedEmployee = await _employeeService.PatchEmployeeAsync(id, dto);
+            return updatedEmployee == null ? NotFound() : Ok(updatedEmployee);
         }
 
 
