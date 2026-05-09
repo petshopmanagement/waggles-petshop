@@ -69,7 +69,41 @@ namespace PetManagementSystem.Api.Repositories
             return pet?.Employees.ToList();
         }
 
+        public async Task<IEnumerable<Transaction>> GetTransactionByPetId(int petId)
+        {
+            return await _context.Transactions
+                         .Include(x => x.Customer)
+                         .Include(x => x.Pet)
+                         .Where(x => x.PetId == petId)
+                         .ToListAsync();
+        }
 
+        public async Task<IEnumerable<GroomingService>> GetGroomingsByPetId(int petId)
+        {
+            var pet = await _context.Pets
+               .Include(x => x.Services)
+               .FirstOrDefaultAsync(x => x.PetId == petId);
 
+            if (pet == null)
+            {
+                return Enumerable.Empty<GroomingService>();
+            }
+
+            return pet.Services;
+        }
+
+        public  async Task<IEnumerable<Vaccination>> GetVaccinationByPetId(int petId)
+        {
+            var pet = await _context.Pets
+              .Include(x => x.Vaccinations)
+              .FirstOrDefaultAsync(x => x.PetId == petId);
+
+            if (pet == null)
+            {
+                return Enumerable.Empty<Vaccination>();
+            }
+
+            return pet.Vaccinations;
+        }
     }
 }

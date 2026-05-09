@@ -19,5 +19,11 @@ namespace PetManagementSystem.Api.Repositories
 
         Task<IEnumerable<Supplier>> GetSuppliersByPetId(int petId);
         Task<IEnumerable<Employee>> GetEmployeeById(int petId);
+
+        Task<IEnumerable<Transaction>> GetTransactionByPetId(int petId);
+
+        Task<IEnumerable<GroomingService>> GetGroomingsByPetId(int petId);
+
+        Task<IEnumerable<Vaccination>> GetVaccinationByPetId(int petId);
     }
 }

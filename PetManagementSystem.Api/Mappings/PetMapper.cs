@@ -15,11 +15,17 @@ namespace PetManagementSystem.Api.Mappings
             CreateMap<Supplier, SupplierDTO>();
             CreateMap<Pet, PetDTO>();
 
-            CreateMap<CustomerDTO, Customer>();
-            CreateMap<Customer, CustomerDTO>();
-
             CreateMap<Employee, EmployeeDTO>();
-            CreateMap<Customer, CustomerDTO>();
+            CreateMap<EmployeeDTO, Employee>();
+
+
+            CreateMap<Transaction, TransactionDto>();
+            CreateMap<TransactionDto, Transaction>();
+
+            CreateMap<GroomingService, GroomingDTO>();
+            CreateMap<GroomingDTO, GroomingService>();
+            CreateMap<Vaccination, VaccinationDTO>();
+            CreateMap<VaccinationDTO, Vaccination>();
         }
     }
 }

@@ -151,4 +151,29 @@ public class PetsController : ControllerBase
 
         return Ok(employees);
     }
+
+    [HttpGet("transactions/{petId}")]
+    public async Task<IActionResult> GetTransactionsByPetId(int petId)
+    {
+        var result = await _service.GetTrasactionbypetID(petId);
+
+        return Ok(result);
+    }
+
+    [HttpGet("groomings/{petId}")]
+    public async Task<IActionResult> GetGroomingsByPetId(int petId)
+    {
+        var result = await _service.GetGroomingsByPetId(petId);
+
+        return Ok(result);
+    }
+
+    // GET: api/pets/vaccinations/1
+    [HttpGet("vaccinations/{petId}")]
+    public async Task<IActionResult> GetVaccinationByPetId(int petId)
+    {
+        var result = await _service.GetVaccinationByPetId(petId);
+
+        return Ok(result);
+    }
 }

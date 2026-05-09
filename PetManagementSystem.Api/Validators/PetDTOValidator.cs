@@ -39,7 +39,7 @@ namespace PetManagementSystem.Api.Validators
                 .WithMessage("Breed is required.")
                 .MaximumLength(100)
                 .WithMessage("Breed cannot exceed 100 characters.");
-
+            
             RuleFor(x => x.ImageUrl)
                 .MaximumLength(500)
                 .WithMessage("Image URL cannot exceed 500 characters.");

@@ -127,5 +127,28 @@ namespace PetManagementSystem.Api.Services
             }
             return _mapper.Map<IEnumerable<EmployeeDTO>>(employees);
         }
+
+        public async Task<IEnumerable<TransactionDto>> GetTrasactionbypetID(int petId)
+        {
+            var transactions = await _repository.GetTransactionByPetId(petId);
+
+            return _mapper.Map<IEnumerable<TransactionDto>>(transactions);
+        }
+
+        public async Task<IEnumerable<VaccinationDTO>> GetVaccinationByPetId(int petId)
+        {
+            var vaccinations = await _repository.GetVaccinationByPetId(petId);
+
+            return _mapper.Map<IEnumerable<VaccinationDTO>>(vaccinations);
+        }
+
+        
+
+        public async Task<IEnumerable<GroomingDTO>> GetGroomingsByPetId(int petId)
+        {
+            var groomings = await _repository.GetGroomingsByPetId(petId);
+
+            return _mapper.Map<IEnumerable<GroomingDTO>>(groomings);
+        }
     }
 }
