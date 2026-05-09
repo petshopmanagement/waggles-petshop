@@ -1,11 +1,11 @@
 ﻿namespace PetManagementSystem.Api.DTOs
 {
-    public class PetDTO
+    public class PetDto
     {
         public int? PetId { get; set; }
         public string? Name { get; set; }
 
-        public decimal? Price { get; set; }
+        public decimal? Price { get; set; } 
 
         public int? Age { get; set; }
 

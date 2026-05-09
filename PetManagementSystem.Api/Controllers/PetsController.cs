@@ -16,35 +16,35 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PetDTO>>> GetAllPets()
+        public async Task<ActionResult<IEnumerable<PetDto>>> GetAllPets()
         {
             var pets = await _service.GetAllPets();
             return Ok(pets);
         }
 
         [HttpGet("{petid}")]
-        public async Task<ActionResult<PetDTO>> GetPet(int petid)
+        public async Task<ActionResult<PetDto>> GetPet(int petid)
         {
             var pet = await _service.GetPetById(petid);
             return Ok(pet);
         }
 
         [HttpGet("category/{categoryId}")]
-        public async Task<ActionResult<IEnumerable<PetDTO>>> GetPetByCategory(int categoryId)
+        public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByCategory(int categoryId)
         {
             var pets = await _service.GetPetByCategory(categoryId);
             return Ok(pets);
         }
 
         [HttpGet("name/{name}")]
-        public async Task<ActionResult<IEnumerable<PetDTO>>> GetPetByName(string name)
+        public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByName(string name)
         {
             var pets = await _service.GetPetByName(name);
             return Ok(pets);
         }
 
         [HttpPost]
-        public async Task<ActionResult<PetDTO>> PostPet([FromBody] PetCreate dto)
+        public async Task<ActionResult<PetDto>> PostPet([FromBody] PetCreate dto)
         {
             var createdPet = await _service.AddPet(dto);
 
@@ -70,7 +70,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("{petId}/employees")]
-        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetEmployeeByPetId(int petId)
+        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployeeByPetId(int petId)
         {
             var employees = await _service.GetEmployeeByPetIdService(petId);
             return Ok(employees);
@@ -91,7 +91,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("vaccinations/{petId}")]
-        public async Task<ActionResult<IEnumerable<VaccinationDTO>>> GetVaccinationByPetId(int petId)
+        public async Task<ActionResult<IEnumerable<VaccinationDto>>> GetVaccinationByPetId(int petId)
         {
             var result = await _service.GetVaccinationByPetId(petId);
             return Ok(result);

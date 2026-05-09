@@ -13,10 +13,10 @@ namespace PetManagementSystem.Api.Mappings
             CreateMap<PetUpdate, Pet>();
             CreateMap<SupplierDTO, Supplier>();
             CreateMap<Supplier, SupplierDTO>();
-            CreateMap<Pet, PetDTO>();
+            CreateMap<Pet, PetDto>();
 
-            CreateMap<Employee, EmployeeDTO>();
-            CreateMap<EmployeeDTO, Employee>();
+            CreateMap<Employee, EmployeeDto>();
+            CreateMap<EmployeeDto, Employee>();
 
 
             CreateMap<Transaction, TransactionDto>();
@@ -24,8 +24,8 @@ namespace PetManagementSystem.Api.Mappings
 
             CreateMap<GroomingService, GroomingDTO>();
             CreateMap<GroomingDTO, GroomingService>();
-            CreateMap<Vaccination, VaccinationDTO>();
-            CreateMap<VaccinationDTO, Vaccination>();
+            CreateMap<Vaccination, VaccinationDto>();
+            CreateMap<VaccinationDto, Vaccination>();
 
             CreateMap<PetFood, FoodDTO>().ReverseMap();
 

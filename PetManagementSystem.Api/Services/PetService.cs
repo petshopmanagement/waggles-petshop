@@ -17,7 +17,7 @@ namespace PetManagementSystem.Api.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PetDTO>> GetAllPets()
+        public async Task<IEnumerable<PetDto>> GetAllPets()
         {
             var pets = await _repository.GetAllPets();
 
@@ -26,10 +26,10 @@ namespace PetManagementSystem.Api.Services
                 throw new NotFoundException("No pets found.");
             }
 
-            return _mapper.Map<IEnumerable<PetDTO>>(pets);
+            return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
 
-        public async Task<PetDTO?> GetPetById(int petid)
+        public async Task<PetDto?> GetPetById(int petid)
         {
             if (petid <= 0)
             {
@@ -43,10 +43,10 @@ namespace PetManagementSystem.Api.Services
                 throw new NotFoundException("Pet not found.");
             }
 
-            return _mapper.Map<PetDTO>(pet);
+            return _mapper.Map<PetDto>(pet);
         }
 
-        public async Task<IEnumerable<PetDTO>> GetPetByCategory(int categoryId)
+        public async Task<IEnumerable<PetDto>> GetPetByCategory(int categoryId)
         {
             if (categoryId <= 0)
             {
@@ -60,10 +60,10 @@ namespace PetManagementSystem.Api.Services
                 throw new NotFoundException("No pets found in this category.");
             }
 
-            return _mapper.Map<IEnumerable<PetDTO>>(pets);
+            return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
 
-        public async Task<IEnumerable<PetDTO>> GetPetByName(string name)
+        public async Task<IEnumerable<PetDto>> GetPetByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -77,10 +77,10 @@ namespace PetManagementSystem.Api.Services
                 throw new NotFoundException("No pets found with this name.");
             }
 
-            return _mapper.Map<IEnumerable<PetDTO>>(pets);
+            return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
 
-        public async Task<PetDTO> AddPet(PetCreate dto)
+        public async Task<PetDto> AddPet(PetCreate dto)
         {
             if (dto == null)
             {
@@ -91,7 +91,7 @@ namespace PetManagementSystem.Api.Services
 
             await _repository.AddPet(pet);
 
-            return _mapper.Map<PetDTO>(pet);
+            return _mapper.Map<PetDto>(pet);
         }
 
         public async Task UpdatePet(int petid, PetUpdate dto)
@@ -140,7 +140,7 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<IEnumerable<SupplierDTO>>(suppliers);
         }
 
-        public async Task<IEnumerable<EmployeeDTO>> GetEmployeeByPetIdService(int petId)
+        public async Task<IEnumerable<EmployeeDto>> GetEmployeeByPetIdService(int petId)
         {
             if (petId <= 0)
             {
@@ -154,7 +154,7 @@ namespace PetManagementSystem.Api.Services
                 throw new NotFoundException("No employees found for this pet.");
             }
 
-            return _mapper.Map<IEnumerable<EmployeeDTO>>(employees);
+            return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
         }
 
         public async Task<IEnumerable<TransactionDto>> GetTrasactionbypetID(int petId)
@@ -174,7 +174,7 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<IEnumerable<TransactionDto>>(transactions);
         }
 
-        public async Task<IEnumerable<VaccinationDTO>> GetVaccinationByPetId(int petId)
+        public async Task<IEnumerable<VaccinationDto>> GetVaccinationByPetId(int petId)
         {
             if (petId <= 0)
             {
@@ -188,7 +188,7 @@ namespace PetManagementSystem.Api.Services
                 throw new NotFoundException("No vaccinations found for this pet.");
             }
 
-            return _mapper.Map<IEnumerable<VaccinationDTO>>(vaccinations);
+            return _mapper.Map<IEnumerable<VaccinationDto>>(vaccinations);
         }
 
         public async Task<IEnumerable<GroomingDTO>> GetGroomingsByPetId(int petId)

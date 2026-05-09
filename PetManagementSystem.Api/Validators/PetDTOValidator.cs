@@ -3,7 +3,7 @@ using PetManagementSystem.Api.DTOs;
 
 namespace PetManagementSystem.Api.Validators
 {
-    public class PetDTOValidator : AbstractValidator<PetDTO>
+    public class PetDTOValidator : AbstractValidator<PetDto>
     {
         public PetDTOValidator()
         {
