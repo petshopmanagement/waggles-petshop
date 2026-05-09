@@ -9,7 +9,6 @@ namespace PetManagementSystem.Api.Validators
         {
             RuleFor(x => x.PetId)
                 .GreaterThan(0)
-                .When(x => x.PetId.HasValue)
                 .WithMessage("Pet Id must be greater than 0.");
 
             RuleFor(x => x.Name)
