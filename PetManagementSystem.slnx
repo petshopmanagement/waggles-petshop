@@ -6,6 +6,8 @@
     <Project Path="PetManagementSystem.Web/PetManagementSystem.Web.csproj" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="PetControllerTest/PetControllerTest.csproj" Id="cebb4b28-0248-4cfb-a3ca-68f8fdf09ae1" />
+    <Project Path="PetFoodControllertest/PetFoodControllertest.csproj" Id="c34e615e-7c42-43b8-b5b8-ab4d7814ea87" />
     <Project Path="PetManagementSystem.Tests/PetManagementSystem.Tests.csproj" />
   </Folder>
 </Solution>
