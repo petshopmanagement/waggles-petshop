@@ -10,6 +10,8 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using PetManagementSystem.Api.Middleware;
+using PetManagementSystem.Api.Helpers;
+
 
 namespace PetManagementSystem.Api
 
@@ -36,6 +38,7 @@ namespace PetManagementSystem.Api
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<JwtHelper>();
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var secretKey = jwtSettings["Key"] ?? "super_secret_key_that_is_long_enough_for_hmac_sha256";
