@@ -46,5 +46,9 @@ namespace PetManagementSystem.Api.Repositories
         //    return await _context.Suppliers.FirstOrDefaultAsync
         //        (x => x.Pets.Any(x => x.PetId == id));
         //}
+        public async Task<Supplier?> GetByEmailAsync(string email)
+        {
+            return await _context.Suppliers.FirstOrDefaultAsync(c => c.Email == email);
+        }
     }
 }

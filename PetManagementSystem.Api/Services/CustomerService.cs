@@ -20,14 +20,14 @@ public class CustomerService : ICustomerService
     public async Task<IEnumerable<CustomerDto>> GetAllAsync()
         => _mapper.Map<IEnumerable<CustomerDto>>(await _repo.GetAllAsync());
 
-    public async Task<CustomerDto?> GetByIdAsync(int id)
+    public async Task<CustomerDto> GetByIdAsync(int id)
     {
         var c = await _repo.GetByIdAsync(id);
         if (c == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
         return _mapper.Map<CustomerDto>(c);
     }
 
-    public async Task<CustomerProfileDto?> GetProfileAsync(int id)
+    public async Task<CustomerProfileDto> GetProfileAsync(int id)
     {
         var c = await _repo.GetWithAddressAsync(id);
         if (c == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
@@ -37,14 +37,15 @@ public class CustomerService : ICustomerService
     public async Task<IEnumerable<TransactionDto>> GetTransactionsAsync(int customerId)
         => _mapper.Map<IEnumerable<TransactionDto>>(await _repo.GetTransactionsAsync(customerId));
 
-    public async Task<CustomerDto?> UpdateAsync(int id, UpdateCustomerDto dto)
+    public async Task<CustomerDto> UpdateAsync(int id, UpdateCustomerDto dto)
     {
         var customer = _mapper.Map<Customer>(dto);
         var updated = await _repo.UpdateAsync(id, customer);
-        return updated == null ? null : _mapper.Map<CustomerDto>(updated);
+        if (updated == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
+        return _mapper.Map<CustomerDto>(updated);
     }
 
-    public async Task<CustomerDto?> PatchAsync(int id, PatchCustomerDto dto)
+    public async Task<CustomerDto> PatchAsync(int id, PatchCustomerDto dto)
     {
         var existing = await _repo.GetByIdAsync(id);
         if (existing == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
@@ -56,21 +57,25 @@ public class CustomerService : ICustomerService
         if (dto.AddressId.HasValue) existing.AddressId = dto.AddressId;
 
         var updated = await _repo.UpdateAsync(id, existing);
-        return updated == null ? null : _mapper.Map<CustomerDto>(updated);
+        if (updated == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
+        return _mapper.Map<CustomerDto>(updated);
     }
 
-    public async Task<CustomerProfileDto?> AddAddressAsync(int id, AddressDto addressDto)
+    public async Task<CustomerProfileDto> AddAddressAsync(int id, AddressDto addressDto)
     {
         var existing = await _repo.GetByIdAsync(id);
         if (existing == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
 
         existing.Address = _mapper.Map<Address>(addressDto);
         var updated = await _repo.UpdateAsync(id, existing);
+        if (updated == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
 
-        // Return the full profile so they see the new address attached!
-        return updated == null ? null : await GetProfileAsync(id);
+        return await GetProfileAsync(id);
     }
 
-    public async Task<bool> DeleteAsync(int id)
-        => await _repo.DeleteAsync(id);
+    public async Task DeleteAsync(int id)
+    {
+        var deleted = await _repo.DeleteAsync(id);
+        if (!deleted) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
+    }
 }

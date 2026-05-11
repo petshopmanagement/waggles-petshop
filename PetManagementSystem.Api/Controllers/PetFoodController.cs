@@ -4,13 +4,13 @@ using PetManagementSystem.Api.Services;
 
 namespace PetManagementSystem.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/PetFood")]
     [ApiController]
-    public class PeFoodController : ControllerBase
+    public class PetFoodController : ControllerBase
     {
         private readonly IFoodService _service;
 
-        public PeFoodController(
+        public PetFoodController(
             IFoodService service)
         {
             _service = service;

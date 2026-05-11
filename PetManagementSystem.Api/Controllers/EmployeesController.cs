@@ -33,7 +33,6 @@ namespace PetManagementSystem.Api.Controllers
         public async Task<IActionResult> GetByEmpId(int id)
         {
             var emp = await _employeeService.GetEmpByIdAsync(id);
-            if (emp == null) return NotFound();
             return Ok(emp);
         }
 
@@ -55,7 +54,7 @@ namespace PetManagementSystem.Api.Controllers
         public async Task<IActionResult> PatchEmployee(int id, UpdateEmployeeDto dto)
         {
             var updatedEmployee = await _employeeService.PatchEmployeeAsync(id, dto);
-            return updatedEmployee == null ? NotFound() : Ok(updatedEmployee);
+            return Ok(updatedEmployee);
         }
 
 
@@ -63,9 +62,7 @@ namespace PetManagementSystem.Api.Controllers
         public async Task<IActionResult> GetPets(int id)
         {
             var pets = await _employeeService.GetPetsByEmpIdAsync(id);
-            if (pets == null) return NotFound();
             return Ok(pets);
-
         }
 
     }
