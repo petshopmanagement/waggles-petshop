@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
-using PetManagementSystem.Api.DTOs.SupplierDtos;
 using PetManagementSystem.Api.Helpers;
 using PetManagementSystem.Api.Services;
 
@@ -9,6 +9,7 @@ namespace PetManagementSystem.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   // [Authorize]
     public class SupplierController : ControllerBase
     {
         private readonly ISupplierService _supplierService;
@@ -33,14 +34,14 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<SupplierDto>>> PostSupplier(CreateSupplierDto supplier)
+        public async Task<ActionResult<ApiResponse<SupplierDto>>> PostSupplier(SupplierDto supplier)
         {
             var createdSupplier = await _supplierService.CreateSupplierAsync(supplier);
             return CreatedAtAction(nameof(GetSupplier), new { id = createdSupplier.SupplierId }, ApiResponse<SupplierDto>.SuccessResponse(createdSupplier));
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<ApiResponse<string>>> PatchSupplier(int id, [FromBody] JsonPatchDocument<UpdateSupplierDto> patchDoc)
+        public async Task<ActionResult<ApiResponse<string>>> PatchSupplier(int id, [FromBody] JsonPatchDocument<SupplierDto> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest(ApiResponse<string>.FailureResponse("Invalid patch document."));
@@ -54,6 +55,13 @@ namespace PetManagementSystem.Api.Controllers
         {
             var petDtos = await _supplierService.GetPetsAsync(id);
             return Ok(ApiResponse<IEnumerable<PetDto>>.SuccessResponse(petDtos));
+        }
+
+        [HttpGet("{id}/address")]
+        public async Task<ActionResult<ApiResponse<AddressDto>>> GetAddress(int id)
+        {
+            var addressDto = await _supplierService.GetAddressAsync(id);
+            return Ok(ApiResponse<AddressDto>.SuccessResponse(addressDto));
         }
     }
 }

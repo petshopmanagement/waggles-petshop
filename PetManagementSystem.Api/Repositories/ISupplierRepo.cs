@@ -1,4 +1,4 @@
-﻿using PetManagementSystem.Api.Models;
+using PetManagementSystem.Api.Models;
 
 namespace PetManagementSystem.Api.Repositories
 {
@@ -9,5 +9,6 @@ namespace PetManagementSystem.Api.Repositories
         Task<Supplier> AddAsync(Supplier supplier);
         Task UpdateAsync(Supplier supplier);
         Task<IEnumerable<Pet>> GetAllPetsAsync(int id);
+        Task<Address?> GetAddressAsync(int id);
     }
 }

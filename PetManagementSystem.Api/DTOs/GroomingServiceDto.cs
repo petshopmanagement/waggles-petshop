@@ -1,7 +1,8 @@
-namespace PetManagementSystem.Api.DTOs.GroomingServiceDtos
+namespace PetManagementSystem.Api.DTOs
 {
-    public class CreateGroomingServiceDto
+    public class GroomingServiceDto
     {
+        public int ServiceId { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
         public decimal? Price { get; set; }

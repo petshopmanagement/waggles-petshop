@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using PetManagementSystem.Api.DTOs;
-using PetManagementSystem.Api.DTOs.GroomingServiceDtos;
 using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Repositories;
@@ -39,20 +38,20 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<GroomingServiceDto>(service);
         }
 
-        public async Task<GroomingServiceDto> CreateAsync(CreateGroomingServiceDto dto)
+        public async Task<GroomingServiceDto> CreateAsync(GroomingServiceDto dto)
         {
             var service = _mapper.Map<GroomingService>(dto);
             var createdService = await _repo.AddAsync(service);
             _logger.LogInformation("Created new grooming service: {ServiceName}", createdService.Name);
             return _mapper.Map<GroomingServiceDto>(createdService);
         }
-        public async Task PatchAsync(int id, JsonPatchDocument<UpdateGroomingServiceDto> patchDoc)
+        public async Task PatchAsync(int id, JsonPatchDocument<GroomingServiceDto> patchDoc)
         {
             var existingService = await _repo.GetByIdAsync(id);
             if (existingService == null)
                 throw new DataNotFoundException($"Grooming service with ID {id} not found.");
 
-            var dto = _mapper.Map<UpdateGroomingServiceDto>(existingService);
+            var dto = _mapper.Map<GroomingServiceDto>(existingService);
             patchDoc.ApplyTo(dto);
 
             _mapper.Map(dto, existingService);

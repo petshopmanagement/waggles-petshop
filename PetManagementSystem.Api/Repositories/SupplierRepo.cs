@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PetManagementSystem.Api.Data;
 using PetManagementSystem.Api.Models;
 using System.Linq;
@@ -14,11 +14,11 @@ namespace PetManagementSystem.Api.Repositories
         }
         public async Task<IEnumerable<Supplier>> GetAllAsync()
         {
-            return await _context.Suppliers.Include(s => s.Address).ToListAsync();
+            return await _context.Suppliers.Include(s => s.Address).Include(s => s.Pets).ToListAsync();
         }
         public async Task<Supplier?> GetByIdAsync(int id)
         {
-            return await _context.Suppliers.Include(s => s.Address).FirstOrDefaultAsync(s => s.SupplierId == id);
+            return await _context.Suppliers.Include(s => s.Address).Include(s => s.Pets).FirstOrDefaultAsync(s => s.SupplierId == id);
         }
         public async Task<Supplier> AddAsync(Supplier supplier)
         {
@@ -41,10 +41,14 @@ namespace PetManagementSystem.Api.Repositories
 
             return supplier?.Pets.ToList();
         }
-        //public async Task<Supplier> GetByPetIdAsync(int id)
-        //{
-        //    return await _context.Suppliers.FirstOrDefaultAsync
-        //        (x => x.Pets.Any(x => x.PetId == id));
-        //}
+
+        public async Task<Address?> GetAddressAsync(int id)
+        {
+            var supplier = await _context.Suppliers
+                .Include(s => s.Address)
+                .FirstOrDefaultAsync(s => s.SupplierId == id);
+
+            return supplier?.Address;
+        }
     }
 }

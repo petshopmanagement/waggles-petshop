@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
-using PetManagementSystem.Api.DTOs.GroomingServiceDtos;
 using PetManagementSystem.Api.Helpers;
 using PetManagementSystem.Api.Services;
 
@@ -9,6 +9,7 @@ namespace PetManagementSystem.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GroomingServicesController : ControllerBase
     {
         private readonly IGroomingServiceService _service;
@@ -33,14 +34,14 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<GroomingServiceDto>>> Create(CreateGroomingServiceDto dto)
+        public async Task<ActionResult<ApiResponse<GroomingServiceDto>>> Create(GroomingServiceDto dto)
         {
             var createdService = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdService.ServiceId }, ApiResponse<GroomingServiceDto>.SuccessResponse(createdService));
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<ApiResponse<string>>> Patch(int id, [FromBody] JsonPatchDocument<UpdateGroomingServiceDto> patchDoc)
+        public async Task<ActionResult<ApiResponse<string>>> Patch(int id, [FromBody] JsonPatchDocument<GroomingServiceDto> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest(ApiResponse<string>.FailureResponse("Invalid patch document."));

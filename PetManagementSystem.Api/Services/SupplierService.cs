@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using PetManagementSystem.Api.DTOs;
-using PetManagementSystem.Api.DTOs.SupplierDtos;
 using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Repositories;
@@ -32,20 +31,23 @@ namespace PetManagementSystem.Api.Services
             if (supplier == null) throw new SupplierNotFoundException("Supplier not found");
             return supplier == null ? null : _mapper.Map<SupplierDto>(supplier);
         }
-        public async Task<SupplierDto> CreateSupplierAsync(CreateSupplierDto dto)
+        public async Task<SupplierDto> CreateSupplierAsync(SupplierDto dto)
         {
             var supplierEntity = _mapper.Map<Supplier>(dto);
             var createdSupplier = await _repository.AddAsync(supplierEntity);
             _logger.LogInformation("Created new supplier: {SupplierName}", createdSupplier.Name);
-            return _mapper.Map<SupplierDto>(createdSupplier);
+            
+            // Re-fetch to include navigation properties (like Address)
+            var completeSupplier = await _repository.GetByIdAsync(createdSupplier.SupplierId);
+            return _mapper.Map<SupplierDto>(completeSupplier);
         }
 
-        public async Task PatchSupplierAsync(int id, JsonPatchDocument<UpdateSupplierDto> patchDoc)
+        public async Task PatchSupplierAsync(int id, JsonPatchDocument<SupplierDto> patchDoc)
         {
             var existingSupplier = await _repository.GetByIdAsync(id);
             if (existingSupplier == null) throw new SupplierNotFoundException("Supplier not found");
 
-            var dto = _mapper.Map<UpdateSupplierDto>(existingSupplier);
+            var dto = _mapper.Map<SupplierDto>(existingSupplier);
             patchDoc.ApplyTo(dto);
 
             _mapper.Map(dto, existingSupplier);
@@ -62,5 +64,13 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
 
+        public async Task<AddressDto?> GetAddressAsync(int id)
+        {
+            var address = await _repository.GetAddressAsync(id);
+            if (address == null)
+                throw new DataNotFoundException($"No Address found for Supplier with id: {id}");
+
+            return _mapper.Map<AddressDto>(address);
+        }
     }
 }

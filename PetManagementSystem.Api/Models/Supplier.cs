@@ -5,7 +5,7 @@ namespace PetManagementSystem.Api.Models;
 
 public partial class Supplier
 {
-    public int SupplierId { get; set; }
+   public int SupplierId { get; set; }
 
     public string? Name { get; set; }
 
