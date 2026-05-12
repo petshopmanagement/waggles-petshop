@@ -19,7 +19,7 @@ public class EmployeesControllerTests
         _controller = new EmployeesController(_mockService.Object);
     }
 
-  
+
 
     [Fact]
     public async Task GetAllEmployees_ShouldReturn200_WhenEmployeesExist()
@@ -115,15 +115,15 @@ public class EmployeesControllerTests
     public async Task CreateEmployee_ShouldReturn201_WhenEmployeeCreatedSuccessfully()
     {
         // Arrange
-        var createDto = new CreateEmployeeDto
+        var createDto = new WriteEmployeeDto
         {
             FirstName = "Priya",
             LastName = "Kapoor",
             Position = "Receptionist",
             Email = "priya@waggles.com",
             PhoneNumber = "9876543212",
-            HireDate = new DateOnly(2024, 1, 10),
-            AddressId = 1
+            HireDate = new DateOnly(2024, 1, 10)
+            //AddressId = 1
         };
 
         var createdEmployee = new EmployeeDto
@@ -154,15 +154,15 @@ public class EmployeesControllerTests
     public async Task CreateEmployee_ShouldThrowEmployeeValidationException_WhenEmailAlreadyExists()
     {
         // Arrange
-        var createDto = new CreateEmployeeDto
+        var createDto = new WriteEmployeeDto
         {
             FirstName = "Riya",
             LastName = "Sharma",
             Position = "Vet",
-            Email = "riya@waggles.com",   
+            Email = "riya@waggles.com",
             PhoneNumber = "9876543210",
-            HireDate = new DateOnly(2022, 3, 15),
-            AddressId = 1
+            HireDate = new DateOnly(2022, 3, 15)
+            //AddressId = 1
         };
 
         _mockService
@@ -185,7 +185,7 @@ public class EmployeesControllerTests
         // Arrange
         var employeeId = 1;
 
-        var updateDto = new UpdateEmployeeDto
+        var updateDto = new WriteEmployeeDto
         {
             FirstName = "Riya",
             LastName = "Sharma",
@@ -223,7 +223,7 @@ public class EmployeesControllerTests
         // Arrange
         var employeeId = 99;
 
-        var updateDto = new UpdateEmployeeDto
+        var updateDto = new WriteEmployeeDto
         {
             FirstName = "Ghost",
             LastName = "Employee",

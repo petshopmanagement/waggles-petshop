@@ -112,7 +112,7 @@ public class VaccinationsControllerTests
     public async Task Create_ShouldReturn201_WhenVaccinationCreatedSuccessfully()
     {
         // Arrange
-        var createDto = new CreateVaccinationDto
+        var createDto = new WriteVaccinationDto
         {
             Name = "Parvo",
             Description = "Parvovirus vaccine",
@@ -146,11 +146,11 @@ public class VaccinationsControllerTests
     public async Task Create_ShouldThrowException_WhenVaccinationDataIsInvalid()
     {
         // Arrange
-        var createDto = new CreateVaccinationDto
+        var createDto = new WriteVaccinationDto
         {
-            Name = null,  
+            Name = null,
             Description = null,
-            Price = -100,  
+            Price = -100,
             Available = true
         };
 
@@ -174,7 +174,7 @@ public class VaccinationsControllerTests
         // Arrange
         var vaccinationId = 1;
 
-        var updateDto = new UpdateVaccinationDto
+        var updateDto = new WriteVaccinationDto
         {
             Name = "Rabies Updated",
             Description = "Updated rabies vaccine",
@@ -210,7 +210,7 @@ public class VaccinationsControllerTests
         // Arrange
         var vaccinationId = 99;
 
-        var updateDto = new UpdateVaccinationDto
+        var updateDto = new WriteVaccinationDto
         {
             Name = "Non-existent Vaccine",
             Price = 200
