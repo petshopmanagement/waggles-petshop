@@ -9,8 +9,8 @@ namespace PetManagementSystem.Api.Mappings
         public MappingProfile()
         {
             CreateMap<Customer, CustomerDto>();
-            CreateMap<Customer, CustomerProfileDto>()
-            .ForMember(d => d.Address, o => o.MapFrom(s => s.Address));
+            
+            
             //CreateMap<CreateCustomerDto, Customer>();
             CreateMap<UpdateCustomerDto, Customer>();
              CreateMap<Address, AddressDto>();

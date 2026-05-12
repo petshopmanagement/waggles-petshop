@@ -38,6 +38,8 @@ namespace PetManagementSystem.Api
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
             builder.Services.AddScoped<JwtHelper>();
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");

@@ -1,31 +1,25 @@
 ﻿
-
-using System;
-using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Helpers;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Repositories;
-using BCrypt.Net;
 
 namespace PetManagementSystem.Api.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly ICustomerRepository _customerRepo;
-    //private readonly ISupplierRepository _supplierRepo;
-    //private readonly IEmployeeRepository _employeeRepo;
+    private readonly IAuthRepository _authRepo;
     private readonly IMapper _mapper;
     private readonly JwtHelper _jwtHelper;
 
-    public AuthService(ICustomerRepository customerRepo,  IMapper mapper, JwtHelper jwtHelper)
+    public AuthService(
+        IAuthRepository authRepo,
+        IMapper mapper,
+        JwtHelper jwtHelper)
     {
-        _customerRepo = customerRepo;
-        //_supplierRepo = supplierRepo;
-        //_employeeRepo = employeeRepo;
+        _authRepo = authRepo;
         _mapper = mapper;
         _jwtHelper = jwtHelper;
     }
@@ -37,35 +31,58 @@ public class AuthService : IAuthService
 
         if (role == "customer")
         {
-            var user = await _customerRepo.GetByEmailAsync(email);
+            var user = await _authRepo.GetCustomerByEmailAsync(email);
+
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 throw new InvalidCredentialsException();
 
-            return _jwtHelper.GenerateToken(user.CustomerId.ToString(), user.Email, "Customer", $"{user.FirstName} {user.LastName}");
+            return _jwtHelper.GenerateToken(
+                user.CustomerId.ToString(),
+                user.Email,
+                "Customer",
+                $"{user.FirstName} {user.LastName}"
+            );
         }
-        //else if (role == "supplier")
-        //{
-        //    var user = await _supplierRepo.GetByEmailAsync(email);
-        //    if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-        //        throw new InvalidCredentialsException();
 
-        //    return _jwtHelper.GenerateToken(user.SupplierId.ToString(), user.Email, "Supplier", user.Name);
-        //}
-        //else if (role == "employee")
-        //{
-        //    // Hardcoded Admin login bypass
-        //    if (email == "jennifer.davis@example.com" && request.Password == "Jennifer@123")
-        //    {
-        //        return _jwtHelper.GenerateToken("4", email, "Admin", "Jennifer Davis");
-        //    }
+        if (role == "employee")
+        {
+            var user = await _authRepo.GetEmployeeByEmailAsync(email);
 
-        //    var user = await _employeeRepo.GetByEmailAsync(email);
-        //    if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-        //        throw new InvalidCredentialsException();
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                throw new InvalidCredentialsException();
 
-           
-        //    return _jwtHelper.GenerateToken(user.EmployeeId.ToString(), user.Email, "Employee", $"{user.FirstName} {user.LastName}");
-        //}
+            string finalRole = "Employee";
+
+          
+            if (user.Position.Equals("Manager", StringComparison.OrdinalIgnoreCase) &&
+                email == "jennifer.davis@example.com" &&
+                request.Password == "Jennifer@123")
+            {
+                finalRole = "Admin";
+            }
+
+            return _jwtHelper.GenerateToken(
+                user.EmployeeId.ToString(),
+                user.Email,
+                finalRole,
+                $"{user.FirstName} {user.LastName}"
+            );
+        }
+
+        if (role == "supplier")
+        {
+            var user = await _authRepo.GetSupplierByEmailAsync(email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                throw new InvalidCredentialsException();
+
+            return _jwtHelper.GenerateToken(
+                user.SupplierId.ToString(),
+                user.Email,
+                "Supplier",
+                user.Name
+            );
+        }
 
         throw new InvalidRoleException();
     }
@@ -77,7 +94,7 @@ public class AuthService : IAuthService
 
         if (role == "customer")
         {
-            if (await _customerRepo.GetByEmailAsync(email) != null)
+            if (await _authRepo.GetCustomerByEmailAsync(email) != null)
                 throw new EmailAlreadyExistsException();
 
             var customer = new Customer
@@ -87,53 +104,103 @@ public class AuthService : IAuthService
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 PhoneNumber = request.PhoneNumber,
-                Address = _mapper.Map<Address>(request.Address)
+                Address = request.Address == null ? null : _mapper.Map<Address>(request.Address)
             };
 
-            await _customerRepo.CreateAsync(customer);
+            await _authRepo.CreateCustomerAsync(customer);
 
-            return "Registration successful! Please login to continue.";
+            return "Customer registration successful. Please login to continue.";
         }
-        //else if (role == "supplier")
-        //{
-        //    if (await _supplierRepo.GetByEmailAsync(email) != null)
-        //        throw new EmailAlreadyExistsException();
 
-        //    var supplier = new Supplier
-        //    {
-        //        Email = email,
-        //        PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-        //        Name = request.Name,
-        //        ContactPerson = request.ContactPerson,
-        //        PhoneNumber = request.PhoneNumber,
-        //        Address = _mapper.Map<Address>(request.Address)
-        //    };
+        if (role == "employee")
+        {
+            if (await _authRepo.GetEmployeeByEmailAsync(email) != null)
+                throw new EmailAlreadyExistsException();
 
-        //    await _supplierRepo.CreateAsync(supplier);
+            // Manager Registration Protection
+            if (request.Position.Equals("Manager", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!email.Equals("jennifer.davis@example.com", StringComparison.OrdinalIgnoreCase))
+                    throw new UnauthorizedAccessException("Unauthorized manager registration.");
+            }
 
-        //    return "Registration successful! Please login to continue.";
-        //}
-        //else if (role == "employee")
-        //{
-        //    if (await _employeeRepo.GetByEmailAsync(email) != null)
-        //        throw new EmailAlreadyExistsException();
+            var employee = new Employee
+            {
+                Email = email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber,
+                Position = request.Position,
+                HireDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                Address = request.Address == null ? null : _mapper.Map<Address>(request.Address)
+            };
 
-        //    var employee = new Employee
-        //    {
-        //        Email = email,
-        //        PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-        //        FirstName = request.FirstName,
-        //        LastName = request.LastName,
-        //        PhoneNumber = request.PhoneNumber,
-        //        Position = request.Position,
-        //        HireDate = DateOnly.FromDateTime(DateTime.UtcNow),
-        //        Address = _mapper.Map<Address>(request.Address)
-        //    };
+            await _authRepo.CreateEmployeeAsync(employee);
 
-        //    await _employeeRepo.CreateAsync(employee);
+            return "Employee registration successful. Please login to continue.";
+        }
 
-        //    return "Registration successful! Please login to continue.";
-        //}
+        if (role == "supplier")
+        {
+            if (await _authRepo.GetSupplierByEmailAsync(email) != null)
+                throw new EmailAlreadyExistsException();
+
+            var supplier = new Supplier
+            {
+                Email = email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                Name = request.Name,
+                ContactPerson = request.ContactPerson,
+                PhoneNumber = request.PhoneNumber,
+                Address = request.Address == null ? null : _mapper.Map<Address>(request.Address)
+            };
+
+            await _authRepo.CreateSupplierAsync(supplier);
+
+            return "Supplier registration successful. Please login to continue.";
+        }
+
+        throw new InvalidRoleException();
+    }
+
+    public async Task ChangePasswordAsync(ChangePasswordRequest request)
+    {
+        string role = request.Role.ToLower();
+        string email = request.Email.ToLower();
+
+        if (role == "customer")
+        {
+            var user = await _authRepo.GetCustomerByEmailAsync(email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash))
+                throw new InvalidCredentialsException();
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            await _authRepo.UpdateCustomerAsync(user);
+            return;
+        }
+
+        if (role == "employee" || role == "admin")
+        {
+            var user = await _authRepo.GetEmployeeByEmailAsync(email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash))
+                throw new InvalidCredentialsException();
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            await _authRepo.UpdateEmployeeAsync(user);
+            return;
+        }
+
+        if (role == "supplier")
+        {
+            var user = await _authRepo.GetSupplierByEmailAsync(email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash))
+                throw new InvalidCredentialsException();
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            await _authRepo.UpdateSupplierAsync(user);
+            return;
+        }
 
         throw new InvalidRoleException();
     }

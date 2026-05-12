@@ -13,8 +13,8 @@ namespace PetManagementSystem.Api.Repositories
         Task<Customer?> UpdateAsync(int id, Customer customer);
         
 
-        Task<bool> DeleteAsync(int id);
+       
 
-        Task<Customer?> GetByEmailAsync(string email);
+       
     }
 }

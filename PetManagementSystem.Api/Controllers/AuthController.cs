@@ -1,4 +1,5 @@
 ﻿
+
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
@@ -35,5 +36,16 @@ public class AuthController : ControllerBase
 
         var message = await _authService.RegisterAsync(request);
         return Ok(new { success = true, message = message });
+    }
+
+
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        await _authService.ChangePasswordAsync(request);
+        return Ok(new { success = true, message = "Password changed successfully." });
     }
 }
