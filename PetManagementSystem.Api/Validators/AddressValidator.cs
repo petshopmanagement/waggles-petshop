@@ -3,7 +3,7 @@ using PetManagementSystem.Api.DTOs;
 
 namespace PetManagementSystem.Api.Validators;
 
-public class AddressValidator : AbstractValidator<CreateAddressDto>
+public class AddressValidator : AbstractValidator<WriteAddressDto>
 {
     public AddressValidator()
     {

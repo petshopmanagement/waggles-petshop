@@ -31,7 +31,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateVaccinationDto dto)
+        public async Task<IActionResult> Create(WriteVaccinationDto dto)
         {
             var createdVaccination = await _service.CreateAsync(dto);
 
@@ -42,14 +42,14 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateVaccinationDto dto)
+        public async Task<IActionResult> Update(int id, WriteVaccinationDto dto)
         {
             var updatedVaccination = await _service.UpdateAsync(id, dto);
             return Ok(updatedVaccination);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, UpdateVaccinationDto dto)
+        public async Task<IActionResult> Patch(int id, WriteVaccinationDto dto)
         {
             var updatedVaccination = await _service.PatchAsync(id, dto);
             return updatedVaccination == null ? NotFound() : Ok(updatedVaccination);
@@ -62,4 +62,4 @@ namespace PetManagementSystem.Api.Controllers
             return Ok(pets);
         }
     }
-}   
+}

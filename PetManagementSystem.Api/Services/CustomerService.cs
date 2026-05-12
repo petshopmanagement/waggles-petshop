@@ -27,11 +27,11 @@ public class CustomerService : ICustomerService
         return _mapper.Map<CustomerDto>(c);
     }
 
-    public async Task<CustomerProfileDto> GetProfileAsync(int id)
+    public async Task<CustomerDto> GetProfileAsync(int id)
     {
         var c = await _repo.GetWithAddressAsync(id);
         if (c == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
-        return _mapper.Map<CustomerProfileDto>(c);
+        return _mapper.Map<CustomerDto>(c);
     }
 
     public async Task<IEnumerable<TransactionDto>> GetTransactionsAsync(int customerId)
@@ -45,7 +45,7 @@ public class CustomerService : ICustomerService
         return _mapper.Map<CustomerDto>(updated);
     }
 
-    public async Task<CustomerDto> PatchAsync(int id, PatchCustomerDto dto)
+    public async Task<CustomerDto> PatchAsync(int id, UpdateCustomerDto dto)
     {
         var existing = await _repo.GetByIdAsync(id);
         if (existing == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
@@ -61,7 +61,7 @@ public class CustomerService : ICustomerService
         return _mapper.Map<CustomerDto>(updated);
     }
 
-    public async Task<CustomerProfileDto> AddAddressAsync(int id, AddressDto addressDto)
+    public async Task<CustomerDto> AddAddressAsync(int id, AddressDto addressDto)
     {
         var existing = await _repo.GetByIdAsync(id);
         if (existing == null) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
@@ -73,9 +73,5 @@ public class CustomerService : ICustomerService
         return await GetProfileAsync(id);
     }
 
-    public async Task DeleteAsync(int id)
-    {
-        var deleted = await _repo.DeleteAsync(id);
-        if (!deleted) throw new CustomerNotFoundException($"Customer with ID {id} not found.");
-    }
+
 }

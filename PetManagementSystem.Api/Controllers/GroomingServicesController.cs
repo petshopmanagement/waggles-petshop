@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
-using PetManagementSystem.Api.DTOs.GroomingServiceDtos;
 using PetManagementSystem.Api.Helpers;
 using PetManagementSystem.Api.Services;
 
@@ -19,28 +18,28 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<IEnumerable<GroomingServiceDto>>>> GetAll()
+        public async Task<ActionResult<ApiResponse<IEnumerable<GroomingDTO>>>> GetAll()
         {
             var services = await _service.GetAllAsync();
-            return Ok(ApiResponse<IEnumerable<GroomingServiceDto>>.SuccessResponse(services));
+            return Ok(ApiResponse<IEnumerable<GroomingDTO>>.SuccessResponse(services));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<GroomingServiceDto>>> GetById(int id)
+        public async Task<ActionResult<ApiResponse<GroomingDTO>>> GetById(int id)
         {
             var service = await _service.GetByIdAsync(id);
-            return Ok(ApiResponse<GroomingServiceDto>.SuccessResponse(service));
+            return Ok(ApiResponse<GroomingDTO>.SuccessResponse(service));
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<GroomingServiceDto>>> Create(CreateGroomingServiceDto dto)
+        public async Task<ActionResult<ApiResponse<GroomingDTO>>> Create(GroomingDTO dto)
         {
             var createdService = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdService.ServiceId }, ApiResponse<GroomingServiceDto>.SuccessResponse(createdService));
+            return CreatedAtAction(nameof(GetById), new { id = createdService.ServiceId }, ApiResponse<GroomingDTO>.SuccessResponse(createdService));
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<ApiResponse<string>>> Patch(int id, [FromBody] JsonPatchDocument<UpdateGroomingServiceDto> patchDoc)
+        public async Task<ActionResult<ApiResponse<string>>> Patch(int id, [FromBody] JsonPatchDocument<GroomingDTO> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest(ApiResponse<string>.FailureResponse("Invalid patch document."));

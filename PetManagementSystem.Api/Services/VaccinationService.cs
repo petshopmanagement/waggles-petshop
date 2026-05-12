@@ -6,7 +6,7 @@ using PetManagementSystem.Api.Exceptions;
 
 namespace PetManagementSystem.Api.Services
 {
-    public class VaccinationService :IVaccinationService
+    public class VaccinationService : IVaccinationService
     {
         private readonly IVaccinationRepository _repo;
         private readonly IMapper _mapper;
@@ -37,14 +37,15 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<VaccinationDto>(vaccination);
         }
 
-        public async Task<VaccinationDto> CreateAsync(CreateVaccinationDto dto)
+        public async Task<VaccinationDto> CreateAsync(WriteVaccinationDto dto)
         {
             var vaccination = _mapper.Map<Vaccination>(dto);
             var createdVaccination = await _repo.AddAsync(vaccination);
 
             return _mapper.Map<VaccinationDto>(createdVaccination);
         }
-        public async Task<VaccinationDto> UpdateAsync(int id, UpdateVaccinationDto dto)
+
+        public async Task<VaccinationDto> UpdateAsync(int id, WriteVaccinationDto dto)
         {
             var vaccination = await _repo.GetByIdAsync(id);
 
@@ -61,7 +62,7 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<VaccinationDto>(updatedVaccination);
         }
 
-        public async Task<VaccinationDto?> PatchAsync(int id, UpdateVaccinationDto dto)
+        public async Task<VaccinationDto?> PatchAsync(int id, WriteVaccinationDto dto)
         {
             var vaccination = await _repo.GetByIdAsync(id);
 

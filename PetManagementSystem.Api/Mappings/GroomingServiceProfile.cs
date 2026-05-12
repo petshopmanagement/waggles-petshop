@@ -1,16 +1,18 @@
 using AutoMapper;
-using PetManagementSystem.Api.DTOs.GroomingServiceDtos;
+using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Models;
 
 namespace PetManagementSystem.Api.Mappings
 {
-    public class GroomingServiceProfile : Profile
+    public class SupplierProfile : Profile
     {
-        public GroomingServiceProfile()
+        public SupplierProfile()
         {
-            CreateMap<GroomingService, GroomingServiceDto>().ReverseMap();
-            CreateMap<CreateGroomingServiceDto, GroomingService>();
-            CreateMap<UpdateGroomingServiceDto, GroomingService>().ReverseMap();
+
+            CreateMap<Supplier, SupplierDTO>()
+                .ReverseMap();
+            CreateMap<Pet, PetDto>().ReverseMap();
+            CreateMap<Address, AddressDto>().ReverseMap();
         }
     }
 }

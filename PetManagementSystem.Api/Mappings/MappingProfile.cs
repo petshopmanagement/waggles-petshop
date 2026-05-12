@@ -9,18 +9,15 @@ namespace PetManagementSystem.Api.Mappings
         public MappingProfile()
         {
             CreateMap<Employee, EmployeeDto>();
-            CreateMap<CreateEmployeeDto, Employee>();
-            CreateMap<UpdateEmployeeDto, Employee>();
+            CreateMap<WriteEmployeeDto, Employee>();
+            CreateMap<WriteEmployeeDto, Employee>();
             CreateMap<Customer, CustomerDto>();
-            CreateMap<Customer, CustomerProfileDto>()
-            .ForMember(d => d.Address, o => o.MapFrom(s => s.Address));
-            //CreateMap<CreateCustomerDto, Customer>();
             CreateMap<UpdateCustomerDto, Customer>();
              CreateMap<Address, AddressDto>();
             CreateMap<Pet, PetDto>();
            
-            CreateMap<CreateAddressDto, Address>();
-            CreateMap<CreateAddressDto, Address>();
+            CreateMap<WriteAddressDto, Address>();
+            CreateMap<WriteAddressDto, Address>();
             CreateMap<Transaction, TransactionDto>();
 
         }

@@ -3,19 +3,21 @@ using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Repositories;
 using PetManagementSystem.Api.Exceptions;
+
 namespace PetManagementSystem.Api.Services
 {
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _repository;
         private readonly IMapper _mapper;
+
         public EmployeeService(IEmployeeRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto dto)
+        public async Task<EmployeeDto> CreateEmployeeAsync(WriteEmployeeDto dto)
         {
             var employee = _mapper.Map<Employee>(dto);
             var createdEmployee = await _repository.CreateAsync(employee);
@@ -31,21 +33,20 @@ namespace PetManagementSystem.Api.Services
         public async Task<EmployeeDto> GetEmpByIdAsync(int id)
         {
             var employee = await _repository.GetEmpByIdAsync(id);
+
             if (employee == null)
-            {
                 throw new EmployeeNotFoundException("Employee not found");
-            }
+
             return _mapper.Map<EmployeeDto>(employee);
         }
 
-        public async Task<EmployeeDto> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto)
+        public async Task<EmployeeDto> UpdateEmployeeAsync(int id, WriteEmployeeDto dto)
         {
             var employee = await _repository.GetEmpByIdAsync(id);
 
             if (employee == null)
                 throw new EmployeeNotFoundException("Employee not found");
 
-            // Full update using AutoMapper
             _mapper.Map(dto, employee);
 
             var updatedEmployee = await _repository.UpdateAsync(id, employee);
@@ -55,7 +56,8 @@ namespace PetManagementSystem.Api.Services
 
             return _mapper.Map<EmployeeDto>(updatedEmployee);
         }
-        public async Task<EmployeeDto?> PatchEmployeeAsync(int id, UpdateEmployeeDto dto)
+
+        public async Task<EmployeeDto?> PatchEmployeeAsync(int id, WriteEmployeeDto dto)
         {
             var employee = await _repository.GetEmpByIdAsync(id);
 
@@ -80,8 +82,8 @@ namespace PetManagementSystem.Api.Services
             if (dto.Email != null)
                 employee.Email = dto.Email;
 
-            if (dto.AddressId.HasValue)
-                employee.AddressId = dto.AddressId.Value;
+            if (dto.Address != null)
+                employee.Address = _mapper.Map<Address>(dto.Address);
 
             var updatedEmployee = await _repository.UpdateAsync(id, employee);
 
@@ -89,9 +91,11 @@ namespace PetManagementSystem.Api.Services
                 ? null
                 : _mapper.Map<EmployeeDto>(updatedEmployee);
         }
+
         public async Task<IEnumerable<PetDto>> GetPetsByEmpIdAsync(int id)
         {
             var pets = await _repository.GetEmployeeWithPetsAsync(id);
+
             if (pets == null || !pets.Any())
                 throw new EmployeeNotFoundException($"No Pets are Linked to Employee with id: {id}");
 

@@ -9,6 +9,5 @@ namespace PetManagementSystem.Api.Repositories
         Task<Supplier> AddAsync(Supplier supplier);
         Task UpdateAsync(Supplier supplier);
         Task<IEnumerable<Pet>> GetAllPetsAsync(int id);
-        Task<Supplier?> GetByEmailAsync(string email);
     }
 }

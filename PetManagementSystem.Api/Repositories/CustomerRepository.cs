@@ -17,10 +17,15 @@ public class CustomerRepository : ICustomerRepository
         => await _context.Customers.ToListAsync();
 
     public async Task<Customer?> GetByIdAsync(int id)
-        => await _context.Customers.FindAsync(id);
+    {
+        return await _context.Customers
+            .Include(c => c.Address)
+            .FirstOrDefaultAsync(c => c.CustomerId == id);
+    }
 
     public async Task<Customer?> GetWithAddressAsync(int id)
-        => await _context.Customers.Include(c => c.Address).FirstOrDefaultAsync(c => c.CustomerId == id);
+        => await _context.Customers.Include(c => c.Address)
+        .FirstOrDefaultAsync(c => c.CustomerId == id);
 
     public async Task<IEnumerable<Transaction>> GetTransactionsAsync(int customerId)
         => await _context.Transactions
@@ -48,17 +53,6 @@ public class CustomerRepository : ICustomerRepository
         return existing;
     }
 
-    public async Task<bool> DeleteAsync(int id)
-    {
-        var customer = await _context.Customers.FindAsync(id);
-        if (customer == null) return false;
-        _context.Customers.Remove(customer);
-        await _context.SaveChangesAsync();
-        return true;
-    }
-    public async Task<Customer?> GetByEmailAsync(string email)
-    {
-        return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
-    }
+
 
 }

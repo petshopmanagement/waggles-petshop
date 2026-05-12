@@ -13,7 +13,7 @@ public class CustomersController : ControllerBase
     private readonly ICustomerService _service;
     public CustomersController(ICustomerService service) => _service = service;
 
-    [Authorize(Roles = "Employee,Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
 
@@ -40,22 +40,17 @@ public class CustomersController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> Patch(int id, [FromBody] PatchCustomerDto dto)
+    public async Task<IActionResult> Patch(int id, [FromBody] UpdateCustomerDto dto)
     {
         return Ok(await _service.PatchAsync(id, dto));
     }
 
-    [HttpPost("{id}/address")]
+    [HttpPost("{id}/Addaddress")]
     public async Task<IActionResult> AddAddress(int id, [FromBody] AddressDto dto)
     {
         return Ok(await _service.AddAddressAsync(id, dto));
     }
 
-    [Authorize(Roles = "Employee,Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _service.DeleteAsync(id);
-        return NoContent();
-    }
+
+
 }

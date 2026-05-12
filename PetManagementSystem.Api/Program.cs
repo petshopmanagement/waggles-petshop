@@ -82,6 +82,7 @@ namespace PetManagementSystem.Api
             builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
             builder.Services.AddScoped<ISupplierRepo, SupplierRepo>();
             builder.Services.AddScoped<IGroomingServiceRepo, GroomingServiceRepo>();
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
             builder.Services.AddScoped<IPetService, PetService>();
             builder.Services.AddScoped<IFoodService, FoodService>();

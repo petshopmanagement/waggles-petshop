@@ -8,8 +8,8 @@ namespace PetManagementSystem.Api.Mappings
         public VaccinationProfile()
         {
             CreateMap<Vaccination, VaccinationDto>().ReverseMap();
-            CreateMap<CreateVaccinationDto, Vaccination>();
-            CreateMap<UpdateVaccinationDto, Vaccination>().ReverseMap();
+            CreateMap<WriteVaccinationDto, Vaccination>();
+            CreateMap<WriteVaccinationDto, Vaccination>().ReverseMap();
         }
     }
 }

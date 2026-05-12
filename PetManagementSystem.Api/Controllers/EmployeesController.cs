@@ -37,21 +37,21 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEmployee(CreateEmployeeDto dto)
+        public async Task<IActionResult> CreateEmployee(WriteEmployeeDto dto)
         {
             var created = await _employeeService.CreateEmployeeAsync(dto);
             return CreatedAtAction(nameof(GetByEmpId), new { id = created.EmployeeId }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeDto dto)
+        public async Task<IActionResult> UpdateEmployee(int id, WriteEmployeeDto dto)
         {
             var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, dto);
             return Ok(updatedEmployee);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchEmployee(int id, UpdateEmployeeDto dto)
+        public async Task<IActionResult> PatchEmployee(int id, WriteEmployeeDto dto)
         {
             var updatedEmployee = await _employeeService.PatchEmployeeAsync(id, dto);
             return Ok(updatedEmployee);

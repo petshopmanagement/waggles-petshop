@@ -11,10 +11,10 @@ namespace PetManagementSystem.Api.Repositories
         Task<IEnumerable<Transaction>> GetTransactionsAsync(int customerId);
         Task<Customer> CreateAsync(Customer customer);
         Task<Customer?> UpdateAsync(int id, Customer customer);
-        
 
-        Task<bool> DeleteAsync(int id);
 
-        Task<Customer?> GetByEmailAsync(string email);
+
+
+
     }
 }

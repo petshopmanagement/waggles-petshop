@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using PetManagementSystem.Api.DTOs;
-using PetManagementSystem.Api.DTOs.GroomingServiceDtos;
 using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Repositories;
@@ -21,38 +20,38 @@ namespace PetManagementSystem.Api.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<GroomingServiceDto>> GetAllAsync()
+        public async Task<IEnumerable<GroomingDTO>> GetAllAsync()
         {
             var services = await _repo.GetAllAsync();
             if (services == null || !services.Any())
                 throw new DataNotFoundException("No grooming services found.");
-            
-            return _mapper.Map<IEnumerable<GroomingServiceDto>>(services);
+
+            return _mapper.Map<IEnumerable<GroomingDTO>>(services);
         }
 
-        public async Task<GroomingServiceDto?> GetByIdAsync(int id)
+        public async Task<GroomingDTO?> GetByIdAsync(int id)
         {
             var service = await _repo.GetByIdAsync(id);
             if (service == null)
                 throw new DataNotFoundException($"Grooming service with ID {id} not found.");
-            
-            return _mapper.Map<GroomingServiceDto>(service);
+
+            return _mapper.Map<GroomingDTO>(service);
         }
 
-        public async Task<GroomingServiceDto> CreateAsync(CreateGroomingServiceDto dto)
+        public async Task<GroomingDTO> CreateAsync(GroomingDTO dto)
         {
             var service = _mapper.Map<GroomingService>(dto);
             var createdService = await _repo.AddAsync(service);
             _logger.LogInformation("Created new grooming service: {ServiceName}", createdService.Name);
-            return _mapper.Map<GroomingServiceDto>(createdService);
+            return _mapper.Map<GroomingDTO>(createdService);
         }
-        public async Task PatchAsync(int id, JsonPatchDocument<UpdateGroomingServiceDto> patchDoc)
+        public async Task PatchAsync(int id, JsonPatchDocument<GroomingDTO> patchDoc)
         {
             var existingService = await _repo.GetByIdAsync(id);
             if (existingService == null)
                 throw new DataNotFoundException($"Grooming service with ID {id} not found.");
 
-            var dto = _mapper.Map<UpdateGroomingServiceDto>(existingService);
+            var dto = _mapper.Map<GroomingDTO>(existingService);
             patchDoc.ApplyTo(dto);
 
             _mapper.Map(dto, existingService);

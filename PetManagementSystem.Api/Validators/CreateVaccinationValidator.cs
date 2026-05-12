@@ -3,9 +3,9 @@ using PetManagementSystem.Api.DTOs;
 
 namespace PetManagementSystem.Api.Validators
 {
-    public class CreateVaccinationValidator : AbstractValidator<CreateVaccinationDto>
+    public class CreateVaccinationValidator : AbstractValidator<WriteVaccinationDto>
     {
-        public CreateVaccinationValidator() 
+        public CreateVaccinationValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
