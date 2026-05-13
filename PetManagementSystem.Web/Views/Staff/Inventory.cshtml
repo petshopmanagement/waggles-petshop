@@ -1,0 +1,86 @@
+@model IEnumerable<PetManagementSystem.Web.Models.PetViewModel>
+@{
+    ViewData["Title"] = "Inventory Management";
+}
+
+<div class="row mb-5">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">Inventory Management</h2>
+        <p class="text-muted">Control the shop's pet listings and stock levels.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a asp-controller="Supplier" asp-action="AddPet" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="fa-solid fa-plus me-2"></i>Add New Pet
+        </a>
+    </div>
+</div>
+
+<div class="card custom-card border-0 shadow-sm p-0 overflow-hidden">
+    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Master Pet List</h5>
+        <div class="d-flex gap-3 align-items-center">
+            <form asp-action="Inventory" method="get" class="d-flex gap-2">
+                <select name="categoryId" class="form-select border-0 bg-light small rounded-pill px-3" style="width: 150px;" onchange="this.form.submit()">
+                    <option value="0" selected="@(Context.Request.Query["categoryId"] == "0")">All Categories</option>
+                    <option value="1" selected="@(Context.Request.Query["categoryId"] == "1")">Dogs</option>
+                    <option value="2" selected="@(Context.Request.Query["categoryId"] == "2")">Cats</option>
+                    <option value="3" selected="@(Context.Request.Query["categoryId"] == "3")">Birds</option>
+                    <option value="4" selected="@(Context.Request.Query["categoryId"] == "4")">Small Pets</option>
+                </select>
+                <div class="input-group" style="width: 250px;">
+                    <span class="input-group-text bg-light border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" name="search" class="form-control bg-light border-0 small" 
+                           placeholder="Search inventory..." value="@Context.Request.Query["search"]">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr class="small text-uppercase text-muted fw-bold">
+                    <th class="ps-4">Pet</th>
+                    <th>Breed & Age</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th class="pe-4 text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pet in Model)
+                {
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@(string.IsNullOrEmpty(pet.ImageUrl) ? "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=80" : pet.ImageUrl)" 
+                                     class="rounded-3" style="width: 45px; height: 45px; object-fit: cover;" alt="">
+                                <div>
+                                    <h6 class="mb-0 fw-bold">@pet.Name</h6>
+                                    <small class="text-muted">ID: #@pet.PetId</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-medium">@pet.Breed</div>
+                            <small class="text-muted">@pet.Age years old</small>
+                        </td>
+                        <td class="fw-bold text-dark">$@pet.Price</td>
+                        <td>
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">@pet.CategoryName</span>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                                    <li><a class="dropdown-item py-2" asp-action="EditPet" asp-route-id="@pet.PetId"><i class="fa-solid fa-pen-to-square me-2 text-muted"></i> Edit Details</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

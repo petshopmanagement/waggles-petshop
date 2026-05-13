@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -45,7 +45,8 @@ public class JwtHelper
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             Role = role ?? string.Empty,
             Email = email ?? string.Empty,
-            Name = name ?? string.Empty
+            Name = name ?? string.Empty,
+            UserId = id
         };
     }
 }

@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
+using PetManagementSystem.Api.Helpers; // Added
 using System.Threading.Tasks;
 
 namespace PetManagementSystem.Api.Controllers;
@@ -23,7 +24,7 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
 
         var response = await _authService.LoginAsync(request);
-        return Ok(new { success = true, data = response });
+        return Ok(ApiResponse<AuthResponse>.SuccessResponse(response));
     }
 
     [HttpPost("register")]
@@ -33,7 +34,7 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
 
         var message = await _authService.RegisterAsync(request);
-        return Ok(new { success = true, message = message });
+        return Ok(ApiResponse<string>.SuccessResponse(message));
     }
 
 
@@ -44,6 +45,6 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
 
         await _authService.ChangePasswordAsync(request);
-        return Ok(new { success = true, message = "Password changed successfully." });
+        return Ok(ApiResponse<string>.SuccessResponse("Password changed successfully."));
     }
 }

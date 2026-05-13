@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Helpers;
@@ -83,5 +83,11 @@ public class TransactionService : ITransactionService
             throw new TransactionNotFoundException(id);
 
         return _mapper.Map<TransactionDto>(updated);
+    }
+
+    public async Task<IEnumerable<TransactionDto>> SearchAsync(string query, string? status)
+    {
+        var results = await _repo.SearchAsync(query, status);
+        return _mapper.Map<IEnumerable<TransactionDto>>(results);
     }
 }

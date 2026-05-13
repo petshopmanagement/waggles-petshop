@@ -1,0 +1,146 @@
+@using System.Text.Json
+@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Management Dashboard";
+    var summary = ViewBag.Summary as JsonElement?;
+    var totalRevenue = (decimal)ViewBag.TotalRevenue;
+    var petCount = (int)ViewBag.PetCount;
+}
+
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1">Overview</h2>
+        <p class="text-muted">Welcome back! Here's what's happening with Waggles today.</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="stat-card bg-primary shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="small fw-bold text-uppercase opacity-75">Total Revenue</span>
+                <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+            <h2 class="fw-bold mb-0">$@totalRevenue.ToString("N2")</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-success shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="small fw-bold text-uppercase opacity-75">Active Pets</span>
+                <i class="fa-solid fa-dog"></i>
+            </div>
+            <h2 class="fw-bold mb-0">@petCount</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-info shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="small fw-bold text-uppercase opacity-75">Successful</span>
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 class="fw-bold mb-0">@(summary?.GetProperty("successfulTransactions").GetInt32() ?? 0)</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-danger shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="small fw-bold text-uppercase opacity-75">Failed</span>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h2 class="fw-bold mb-0">@(summary?.GetProperty("failedTransactions").GetInt32() ?? 0)</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Transactions Table -->
+    <div class="col-lg-8">
+        <div class="custom-card border-0 shadow-sm p-0 overflow-hidden">
+            <div class="p-4 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="fw-bold mb-0">Recent Transactions</h5>
+                <a href="#" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr class="small text-uppercase text-muted fw-bold">
+                            <th class="ps-4">Pet</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th class="pe-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var t in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fa-solid fa-paw text-muted"></i>
+                                            </div>
+                                            <span class="fw-bold">@t.GetProperty("petName")</span>
+                                        </div>
+                                    </td>
+                                    <td class="small text-muted">@t.GetProperty("transactionDate")</td>
+                                    <td class="fw-bold">$@t.GetProperty("amount")</td>
+                                    <td class="pe-4">
+                                        @{
+                                            var status = t.GetProperty("transactionStatus").GetString();
+                                            var badgeClass = status == "Success" ? "bg-success" : "bg-danger";
+                                        }
+                                        <span class="badge @badgeClass bg-opacity-10 text-@status.ToLower() rounded-pill px-3 py-2">
+                                            @status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">No recent transactions.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory / Alerts -->
+    <div class="col-lg-4">
+        <div class="custom-card border-0 shadow-sm">
+            <h5 class="fw-bold mb-4">Stock Alerts</h5>
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex align-items-center gap-3 p-3 bg-danger bg-opacity-10 rounded-4">
+                    <i class="fa-solid fa-bone text-danger fa-lg"></i>
+                    <div>
+                        <h6 class="mb-0 fw-bold" style="font-size: 0.85rem;">Organic Cat Treats</h6>
+                        <small class="text-danger fw-bold" style="font-size: 0.7rem;">Only 2 left in stock</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3 p-3 bg-warning bg-opacity-10 rounded-4">
+                    <i class="fa-solid fa-shield-dog text-warning fa-lg"></i>
+                    <div>
+                        <h6 class="mb-0 fw-bold" style="font-size: 0.85rem;">Flea & Tick Shampoo</h6>
+                        <small class="text-warning fw-bold" style="font-size: 0.7rem;">Restock point reached</small>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-outline-primary w-100 mt-4 rounded-pill py-2 fw-bold small">Order Inventory</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .text-success { color: #27ae60 !important; }
+        .text-danger { color: #eb5757 !important; }
+        .bg-info { background-color: #4facfe !important; }
+    </style>
+}

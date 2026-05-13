@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
@@ -45,6 +45,7 @@ public class TransactionsController : ControllerBase
         => Ok(await _service.GetSalesSummaryAsync());
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> Create([FromBody] CreateTransactionDto dto)
     {
         var created = await _service.CreateAsync(dto);
@@ -57,5 +58,13 @@ public class TransactionsController : ControllerBase
     {
         var updated = await _service.UpdateStatusAsync(id, dto);
         return Ok(updated);
+    }
+
+    [HttpGet("search")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] string? status)
+    {
+        var results = await _service.SearchAsync(query, status);
+        return Ok(results);
     }
 }

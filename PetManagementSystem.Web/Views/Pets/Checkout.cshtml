@@ -1,0 +1,56 @@
+@model PetManagementSystem.Web.Models.PetViewModel
+@{
+    ViewData["Title"] = "Confirm Adoption";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-10 col-lg-8">
+        <div class="custom-card border-0 shadow-lg p-0 overflow-hidden">
+            <div class="row g-0">
+                <!-- Pet Side -->
+                <div class="col-md-5 bg-primary bg-opacity-10 p-5 d-flex flex-column justify-content-center align-items-center text-center">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80" : Model.ImageUrl)" 
+                         class="rounded-circle shadow-lg mb-4" style="width: 150px; height: 150px; object-fit: cover;" alt="">
+                    <h3 class="fw-bold mb-1">@Model.Name</h3>
+                    <p class="text-muted mb-4">@Model.Breed &bull; @Model.Age Years</p>
+                    <h4 class="text-primary fw-bold">$@Model.Price</h4>
+                </div>
+
+                <!-- Form Side -->
+                <div class="col-md-7 p-5">
+                    <h3 class="fw-bold mb-4">Complete Adoption</h3>
+                    <p class="text-muted small mb-5">By proceeding, you are expressing your commitment to providing a loving home for @Model.Name. Our team will contact you shortly to finalize the process.</p>
+
+                    <form asp-action="ConfirmAdoption" method="post">
+                        <input type="hidden" name="petId" value="@Model.PetId" />
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">Adopted By</label>
+                            <div class="p-3 bg-light rounded-4 d-flex align-items-center gap-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px;">
+                                    @Context.Request.Cookies["auth_name"]?[0]
+                                </div>
+                                <span class="fw-bold">@Context.Request.Cookies["auth_name"]</span>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-5">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label small text-muted" for="terms">
+                                I agree to the adoption terms and conditions of Waggles Pet Shop.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">
+                            Confirm Adoption
+                        </button>
+                        
+                        <div class="text-center mt-3">
+                            <a asp-action="Details" asp-route-id="@Model.PetId" class="text-muted small text-decoration-none">Back to Profile</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

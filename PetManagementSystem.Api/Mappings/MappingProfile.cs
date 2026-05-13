@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Models;
 
@@ -19,6 +19,7 @@ namespace PetManagementSystem.Api.Mappings
             CreateMap<WriteAddressDto, Address>();
             CreateMap<WriteAddressDto, Address>();
             CreateMap<Transaction, TransactionDto>();
+            CreateMap<CreateTransactionDto, Transaction>();
 
         }
     }

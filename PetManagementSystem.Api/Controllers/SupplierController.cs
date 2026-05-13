@@ -54,5 +54,12 @@ namespace PetManagementSystem.Api.Controllers
             var petDtos = await _supplierService.GetPetsAsync(id);
             return Ok(ApiResponse<IEnumerable<PetDto>>.SuccessResponse(petDtos));
         }
+
+        [HttpGet("{id}/pets/search")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<PetDto>>>> SearchPets(int id, [FromQuery] string query, [FromQuery] int? categoryId)
+        {
+            var petDtos = await _supplierService.SearchPetsAsync(id, query, categoryId);
+            return Ok(ApiResponse<IEnumerable<PetDto>>.SuccessResponse(petDtos));
+        }
     }
 }

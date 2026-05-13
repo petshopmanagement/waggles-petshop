@@ -64,7 +64,10 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
 
-        
-        
+        public async Task<IEnumerable<PetDto>> SearchPetsAsync(int id, string query, int? categoryId)
+        {
+            var pets = await _repository.SearchPetsAsync(id, query, categoryId);
+            return _mapper.Map<IEnumerable<PetDto>>(pets);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using PetManagementSystem.Api.Models;
+using PetManagementSystem.Api.Models;
 
 namespace PetManagementSystem.Api.Repositories;
 
@@ -11,4 +11,5 @@ public interface ITransactionRepository
     Task<decimal> GetTotalRevenueAsync();
     Task<Transaction> CreateAsync(Transaction transaction);
     Task<Transaction?> UpdateStatusAsync(int id, string status);
+    Task<IEnumerable<Transaction>> SearchAsync(string query, string? status);
 }

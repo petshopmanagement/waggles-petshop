@@ -1,0 +1,61 @@
+@model PetManagementSystem.Web.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row justify-content-center align-items-center min-vh-100" style="margin-top: -70px;">
+    <div class="col-md-5">
+        <div class="custom-card border-0 shadow-lg p-5">
+            <div class="text-center mb-5">
+                <div class="bg-primary bg-opacity-10 d-inline-block p-4 rounded-circle mb-3">
+                    <i class="fa-solid fa-lock fa-3x text-primary"></i>
+                </div>
+                <h2 class="fw-bold">Welcome Back</h2>
+                <p class="text-muted">Enter your details to access your account</p>
+            </div>
+
+            <form asp-action="Login" method="post" asp-route-returnUrl="@ViewBag.ReturnUrl">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Role" class="form-label fw-bold small text-uppercase">Login As</label>
+                    <select asp-for="Role" class="form-select bg-light border-0 py-2">
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Supplier">Supplier</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Email" class="form-label fw-bold small text-uppercase">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0"><i class="fa-solid fa-envelope text-muted"></i></span>
+                        <input asp-for="Email" class="form-control bg-light border-0 py-2" placeholder="name@example.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-5">
+                    <label asp-for="Password" class="form-label fw-bold small text-uppercase">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0"><i class="fa-solid fa-key text-muted"></i></span>
+                        <input asp-for="Password" class="form-control bg-light border-0 py-2" placeholder="••••••••" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">
+                    Sign In
+                </button>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted small">Don't have an account? <a asp-action="Register" class="text-primary fw-bold text-decoration-none">Create Account</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

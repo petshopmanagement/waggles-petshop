@@ -1,4 +1,4 @@
-﻿using PetManagementSystem.Api.DTOs;
+using PetManagementSystem.Api.DTOs;
 
 namespace PetManagementSystem.Api.Services;
 
@@ -12,4 +12,5 @@ public interface ITransactionService
     Task<SalesSummaryDto> GetSalesSummaryAsync();
     Task<TransactionDto> CreateAsync(CreateTransactionDto dto);
     Task<TransactionDto> UpdateStatusAsync(int id, UpdateTransactionStatusDto dto); // throws if not found
+    Task<IEnumerable<TransactionDto>> SearchAsync(string query, string? status);
 }

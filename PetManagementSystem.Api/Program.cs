@@ -43,14 +43,18 @@ namespace PetManagementSystem.Api
             // CONTROLLERS + JSON OPTIONS
             // =========================
             builder.Services.AddControllers()
-                .AddNewtonsoftJson()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                })
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.ReferenceHandler =
-                        ReferenceHandler.IgnoreCycles;
+                        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 
                     options.JsonSerializerOptions.DefaultIgnoreCondition =
-                        JsonIgnoreCondition.WhenWritingNull;
+                        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
                 });
 
             // =========================

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PetManagementSystem.Api.Data;
 using PetManagementSystem.Api.Models;
 using System.Linq;
@@ -39,7 +39,32 @@ namespace PetManagementSystem.Api.Repositories
              .Include(s => s.Pets)
              .FirstOrDefaultAsync(s => s.SupplierId == id);
 
-            return supplier?.Pets.ToList();
+            return supplier?.Pets.ToList() ?? new List<Pet>();
+        }
+
+        public async Task<IEnumerable<Pet>> SearchPetsAsync(int id, string query, int? categoryId)
+        {
+            var supplier = await _context.Suppliers
+                .Include(s => s.Pets)
+                .ThenInclude(p => p.Category)
+                .FirstOrDefaultAsync(s => s.SupplierId == id);
+
+            if (supplier == null) return new List<Pet>();
+
+            var pets = supplier.Pets.AsQueryable();
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                pets = pets.Where(p => p.Name.Contains(query, StringComparison.OrdinalIgnoreCase) || 
+                                       p.Breed.Contains(query, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (categoryId.HasValue && categoryId > 0)
+            {
+                pets = pets.Where(p => p.CategoryId == categoryId);
+            }
+
+            return pets.ToList();
         }
 
         

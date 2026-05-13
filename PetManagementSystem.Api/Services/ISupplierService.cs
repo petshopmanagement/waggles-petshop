@@ -11,5 +11,6 @@ namespace PetManagementSystem.Api.Services
         Task<SupplierDTO> CreateSupplierAsync(SupplierDTO dto);
         Task PatchSupplierAsync(int id, JsonPatchDocument<SupplierDTO> patchDoc);
         Task<IEnumerable<PetDto>> GetPetsAsync(int id);
+        Task<IEnumerable<PetDto>> SearchPetsAsync(int id, string query, int? categoryId);
     }
 }

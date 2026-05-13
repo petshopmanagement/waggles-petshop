@@ -1,0 +1,121 @@
+@model IEnumerable<PetManagementSystem.Web.Models.PetViewModel>
+@{
+    ViewData["Title"] = "Supplier Dashboard";
+}
+
+<div class="row mb-5">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">Supplier Management</h2>
+        <p class="text-muted">Overview of the pets and inventory you provide to Waggles.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a asp-action="AddPet" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="fa-solid fa-plus me-2"></i>Supply New Pet
+        </a>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="stat-card bg-primary shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-uppercase opacity-75">Total Supplied</span>
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <h2 class="fw-bold mb-0">@Model.Count()</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card bg-success shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-uppercase opacity-75">Active Listings</span>
+                <i class="fa-solid fa-eye"></i>
+            </div>
+            <h2 class="fw-bold mb-0">@Model.Count()</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card bg-info shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-uppercase opacity-75">Inventory Value</span>
+                <i class="fa-solid fa-money-bill-trend-up"></i>
+            </div>
+            <h2 class="fw-bold mb-0">$@Model.Sum(p => p.Price ?? 0).ToString("N0")</h2>
+        </div>
+    </div>
+</div>
+
+<!-- Supplier Directory / Inventory List -->
+<div class="card custom-card border-0 shadow-sm p-0 overflow-hidden">
+    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Your Supply Directory</h5>
+        <div class="d-flex gap-3 align-items-center">
+            <form asp-action="Dashboard" method="get" class="d-flex gap-2">
+                <select name="categoryId" class="form-select border-0 bg-light small rounded-pill px-3" style="width: 150px;" onchange="this.form.submit()">
+                    <option value="0" selected="@(Context.Request.Query["categoryId"] == "0")">All Categories</option>
+                    <option value="1" selected="@(Context.Request.Query["categoryId"] == "1")">Dogs</option>
+                    <option value="2" selected="@(Context.Request.Query["categoryId"] == "2")">Cats</option>
+                    <option value="3" selected="@(Context.Request.Query["categoryId"] == "3")">Birds</option>
+                    <option value="4" selected="@(Context.Request.Query["categoryId"] == "4")">Small Pets</option>
+                </select>
+                <div class="input-group" style="width: 250px;">
+                    <span class="input-group-text bg-light border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" name="search" class="form-control bg-light border-0 small" 
+                           placeholder="Search your inventory..." value="@Context.Request.Query["search"]">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr class="small text-uppercase text-muted fw-bold">
+                    <th class="ps-4">Pet Details</th>
+                    <th>Breed</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th class="pe-4 text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var pet in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-3 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                        <i class="fa-solid fa-paw text-primary small"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">@pet.Name</h6>
+                                        <small class="text-muted">ID: #@pet.PetId</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@pet.Breed</td>
+                            <td class="fw-bold text-dark">$@pet.Price</td>
+                            <td>
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Available</span>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <button class="btn btn-light btn-sm rounded-circle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-folder-open fa-2x mb-3 opacity-25"></i>
+                            <p class="mb-0">You haven't supplied any pets yet.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

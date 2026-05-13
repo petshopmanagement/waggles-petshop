@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PetManagementSystem.Api.Data;
 using PetManagementSystem.Api.Models;
 
@@ -47,5 +47,29 @@ public class TransactionRepository : ITransactionRepository
         transaction.TransactionStatus = status;
         await _context.SaveChangesAsync();
         return transaction;
+    }
+
+    public async Task<IEnumerable<Transaction>> SearchAsync(string query, string? status)
+    {
+        var transactions = _context.Transactions
+            .Include(t => t.Customer)
+            .Include(t => t.Pet)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(query))
+        {
+            transactions = transactions.Where(t => 
+                t.Customer.FirstName.Contains(query) || 
+                t.Customer.LastName.Contains(query) || 
+                t.Pet.Name.Contains(query) ||
+                t.TransactionId.ToString() == query);
+        }
+
+        if (!string.IsNullOrEmpty(status) && status != "All")
+        {
+            transactions = transactions.Where(t => t.TransactionStatus == status);
+        }
+
+        return await transactions.ToListAsync();
     }
 }

@@ -1,0 +1,141 @@
+@model PetManagementSystem.Web.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="custom-card border-0 shadow-lg p-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Join the Family</h2>
+                <p class="text-muted">Start your journey with Waggles Pet Shop</p>
+            </div>
+
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <!-- Role Selection -->
+                <div class="mb-5">
+                    <label asp-for="Role" class="form-label fw-bold small text-uppercase text-primary">I am registering as a...</label>
+                    <select asp-for="Role" id="roleSelect" class="form-select border-primary border-opacity-25 py-3 rounded-4 shadow-sm">
+                        <option value="Customer">Customer (Adopter)</option>
+                        <option value="Employee">Employee (Shop Staff)</option>
+                        <option value="Supplier">Supplier (Pet Partner)</option>
+                    </select>
+                </div>
+
+                <!-- Fields for Customers & Employees -->
+                <div id="personalFields">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="FirstName" class="form-label fw-bold small text-uppercase">First Name</label>
+                            <input asp-for="FirstName" class="form-control bg-light border-0 py-2" placeholder="John" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="LastName" class="form-label fw-bold small text-uppercase">Last Name</label>
+                            <input asp-for="LastName" class="form-control bg-light border-0 py-2" placeholder="Doe" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fields for Employees Only -->
+                <div id="employeeFields" style="display:none;">
+                    <div class="mb-4">
+                        <label asp-for="Position" class="form-label fw-bold small text-uppercase">Position / Designation</label>
+                        <input asp-for="Position" class="form-control bg-light border-0 py-2" placeholder="e.g. Groomer, Manager, Sales" />
+                    </div>
+                </div>
+
+                <!-- Fields for Suppliers Only -->
+                <div id="supplierFields" style="display:none;">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label fw-bold small text-uppercase">Company Name</label>
+                            <input asp-for="Name" class="form-control bg-light border-0 py-2" placeholder="e.g. Happy Paws Inc" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ContactPerson" class="form-label fw-bold small text-uppercase">Contact Person</label>
+                            <input asp-for="ContactPerson" class="form-control bg-light border-0 py-2" placeholder="e.g. John Doe" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Credentials -->
+                <div class="mb-4">
+                    <label asp-for="Email" class="form-label fw-bold small text-uppercase">Email Address</label>
+                    <input asp-for="Email" class="form-control bg-light border-0 py-2" placeholder="name@example.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label fw-bold small text-uppercase">Password</label>
+                        <input asp-for="Password" class="form-control bg-light border-0 py-2" placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ConfirmPassword" class="form-label fw-bold small text-uppercase">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" class="form-control bg-light border-0 py-2" placeholder="••••••••" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr class="my-5 text-muted opacity-25">
+                <h6 class="fw-bold text-uppercase small mb-4">Address Details</h6>
+
+                <div class="mb-4">
+                    <label asp-for="Street" class="form-label fw-bold small text-uppercase">Street</label>
+                    <input asp-for="Street" class="form-control bg-light border-0 py-2" placeholder="123 Pet Lane" />
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-4">
+                        <label asp-for="City" class="form-label fw-bold small text-uppercase">City</label>
+                        <input asp-for="City" class="form-control bg-light border-0 py-2" placeholder="New York" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="State" class="form-label fw-bold small text-uppercase">State</label>
+                        <input asp-for="State" class="form-control bg-light border-0 py-2" placeholder="NY" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ZipCode" class="form-label fw-bold small text-uppercase">Zip Code</label>
+                        <input asp-for="ZipCode" class="form-control bg-light border-0 py-2" placeholder="10001" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">
+                    Create My Account
+                </button>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted small">Already have an account? <a asp-action="Login" class="text-primary fw-bold text-decoration-none">Sign In</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('roleSelect').addEventListener('change', function() {
+            var personalFields = document.getElementById('personalFields');
+            var employeeFields = document.getElementById('employeeFields');
+            var supplierFields = document.getElementById('supplierFields');
+
+            if (this.value === 'Supplier') {
+                personalFields.style.display = 'none';
+                employeeFields.style.display = 'none';
+                supplierFields.style.display = 'block';
+            } else if (this.value === 'Employee') {
+                personalFields.style.display = 'block';
+                employeeFields.style.display = 'block';
+                supplierFields.style.display = 'none';
+            } else {
+                personalFields.style.display = 'block';
+                employeeFields.style.display = 'none';
+                supplierFields.style.display = 'none';
+            }
+        });
+    </script>
+}
