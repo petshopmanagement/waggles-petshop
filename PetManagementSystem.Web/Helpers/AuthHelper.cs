@@ -26,10 +26,12 @@ namespace PetManagementSystem.Web.Helpers
         }
 
         public static bool IsAdmin(HttpRequest request)
-            => GetRole(request)?.Equals("Admin", StringComparison.OrdinalIgnoreCase) == true ||
-               GetRole(request)?.Equals("Employee", StringComparison.OrdinalIgnoreCase) == true;
+            => GetRole(request)?.Equals("Admin", StringComparison.OrdinalIgnoreCase) == true;
 
         public static bool IsCustomer(HttpRequest request)
             => GetRole(request)?.Equals("Customer", StringComparison.OrdinalIgnoreCase) == true;
+        public static bool IsEmployee(HttpRequest request)
+            => GetRole(request)?.Equals("Employee", StringComparison.OrdinalIgnoreCase) == true;
+
     }
 }

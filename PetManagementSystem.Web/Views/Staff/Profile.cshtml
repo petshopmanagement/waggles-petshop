@@ -1,0 +1,140 @@
+﻿@model PetManagementSystem.Web.Models.EmployeeViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item">
+                    <a asp-action="Dashboard" asp-route-id="@Model.EmployeeId" class="text-decoration-none">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">My Profile</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold mb-1">My Profile</h2>
+        <p class="text-muted">Your personal and employment details.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left: Info -->
+    <div class="col-lg-8">
+
+        <!-- Personal Info -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="fw-bold mb-4 border-bottom pb-3">
+                <i class="fa-solid fa-id-card me-2 text-primary"></i>Personal Information
+            </h5>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <p class="text-muted small fw-bold text-uppercase mb-1">First Name</p>
+                    <p class="fw-medium mb-0">@Model.FirstName</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="text-muted small fw-bold text-uppercase mb-1">Last Name</p>
+                    <p class="fw-medium mb-0">@Model.LastName</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="text-muted small fw-bold text-uppercase mb-1">Email</p>
+                    <p class="fw-medium mb-0">@Model.Email</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="text-muted small fw-bold text-uppercase mb-1">Phone</p>
+                    <p class="fw-medium mb-0">@(Model.PhoneNumber ?? "—")</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment Info -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="fw-bold mb-4 border-bottom pb-3">
+                <i class="fa-solid fa-briefcase me-2 text-success"></i>Employment Details
+            </h5>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <p class="text-muted small fw-bold text-uppercase mb-1">Position</p>
+                    <p class="fw-medium mb-0">@(Model.Position ?? "—")</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="text-muted small fw-bold text-uppercase mb-1">Hire Date</p>
+                    <p class="fw-medium mb-0">@(Model.HireDate?.ToString("MMMM dd, yyyy") ?? "—")</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address -->
+        @if (Model.Address != null)
+        {
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-4 border-bottom pb-3">
+                    <i class="fa-solid fa-location-dot me-2 text-danger"></i>Address
+                </h5>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <p class="text-muted small fw-bold text-uppercase mb-1">Street</p>
+                        <p class="fw-medium mb-0">@(Model.Address.Street ?? "—")</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="text-muted small fw-bold text-uppercase mb-1">City</p>
+                        <p class="fw-medium mb-0">@(Model.Address.City ?? "—")</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="text-muted small fw-bold text-uppercase mb-1">State</p>
+                        <p class="fw-medium mb-0">@(Model.Address.State ?? "—")</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="text-muted small fw-bold text-uppercase mb-1">Zip Code</p>
+                        <p class="fw-medium mb-0">@(Model.Address.ZipCode ?? "—")</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4">
+            <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center
+                justify-content-center mx-auto mb-3"
+                 style="width:90px; height:90px;">
+                <i class="fa-solid fa-user fa-2x text-primary"></i>
+            </div>
+            <h5 class="fw-bold mb-1">@Model.FullName</h5>
+            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">
+                @(Model.Position ?? "Staff")
+            </span>
+            <hr />
+            <p class="text-muted small mb-1">
+                <i class="fa-solid fa-envelope me-1"></i>@Model.Email
+            </p>
+            <p class="text-muted small mb-0">
+                <i class="fa-solid fa-phone me-1"></i>@(Model.PhoneNumber ?? "No phone")
+            </p>
+        </div>
+
+        @if (Model.Pets != null && Model.Pets.Any())
+        {
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h6 class="fw-bold mb-3 border-bottom pb-2">
+                    <i class="fa-solid fa-paw me-2 text-warning"></i>Assigned Pets
+                </h6>
+                @foreach (var pet in Model.Pets)
+                {
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                       
+                        <div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center"
+                             style="width:45px; height:45px;">
+                            <i class="fa-solid fa-paw text-warning"></i>
+                        </div>
+
+                        <div>
+                            <p class="fw-bold mb-0 small">@pet.Name</p>
+                            <p class="text-muted mb-0" style="font-size:0.75rem;">@pet.Breed</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

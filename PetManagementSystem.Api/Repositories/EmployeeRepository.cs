@@ -14,12 +14,12 @@ namespace PetManagementSystem.Api.Repositories
 
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            return await _context.Employees.Include(e => e.Address).ToListAsync();
+            return await _context.Employees.Include(e => e.Address).Include(s => s.Pets).ToListAsync();
         }
 
         public async Task<Employee?> GetEmpByIdAsync(int id)
         {
-            return await _context.Employees.Include(e => e.Address).FirstOrDefaultAsync(e => e.EmployeeId == id);
+            return await _context.Employees.Include(e => e.Address).Include(s => s.Pets).FirstOrDefaultAsync(e => e.EmployeeId == id);
         }
 
         public async Task<Employee?> CreateAsync(Employee employee)
