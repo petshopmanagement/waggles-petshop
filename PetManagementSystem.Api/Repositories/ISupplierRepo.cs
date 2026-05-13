@@ -10,5 +10,6 @@ namespace PetManagementSystem.Api.Repositories
         Task UpdateAsync(Supplier supplier);
         Task<IEnumerable<Pet>> GetAllPetsAsync(int id);
         Task<IEnumerable<Pet>> SearchPetsAsync(int id, string query, int? categoryId);
+        Task<Pet> AddPetToSupplierAsync(int supplierId, Pet pet);
     }
 }

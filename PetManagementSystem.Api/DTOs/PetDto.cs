@@ -1,4 +1,4 @@
-﻿namespace PetManagementSystem.Api.DTOs
+namespace PetManagementSystem.Api.DTOs
 {
     public class PetDto
     {
@@ -9,6 +9,7 @@
         public int? Age { get; set; }
         public decimal? Price { get; set; }
         public string? ImageUrl { get; set; }
+        public int? CategoryId { get; set; }
     }
     public class PetCreate
     {
@@ -18,6 +19,7 @@
         public int? Age { get; set; }
         public decimal? Price { get; set; }
         public string? ImageUrl { get; set; }
+        public int? CategoryId { get; set; }
     }
     public class PetUpdate
     {

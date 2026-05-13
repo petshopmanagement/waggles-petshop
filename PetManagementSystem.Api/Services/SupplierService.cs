@@ -69,5 +69,15 @@ namespace PetManagementSystem.Api.Services
             var pets = await _repository.SearchPetsAsync(id, query, categoryId);
             return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
+
+        public async Task<PetDto> AddPetAsync(int supplierId, PetCreate dto)
+        {
+            var petEntity = _mapper.Map<Pet>(dto);
+            var createdPet = await _repository.AddPetToSupplierAsync(supplierId, petEntity);
+            
+            if (createdPet == null) throw new SupplierNotFoundException("Supplier not found");
+
+            return _mapper.Map<PetDto>(createdPet);
+        }
     }
 }

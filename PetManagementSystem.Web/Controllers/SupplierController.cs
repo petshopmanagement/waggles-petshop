@@ -22,6 +22,21 @@ namespace PetManagementSystem.Web.Controllers
             int? supplierId = AuthHelper.GetUserId(Request);
             if (supplierId == null) return RedirectToAction("Login", "Auth");
 
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            // Fetch Categories for the dropdown
+            var catResponse = await _api.GetAsync<JsonElement?>("Categories");
+            var categories = new List<CategoryViewModel>();
+            if (catResponse != null)
+            {
+                JsonElement catData = default;
+                if (catResponse.Value.TryGetProperty("data", out catData) || catResponse.Value.TryGetProperty("Data", out catData))
+                {
+                    categories = JsonSerializer.Deserialize<List<CategoryViewModel>>(catData.GetRawText(), options) ?? new List<CategoryViewModel>();
+                }
+            }
+            ViewBag.Categories = categories;
+
             string endpoint = $"Supplier/{supplierId}/pets";
             
             // If search or category is provided, use the search endpoint
@@ -31,20 +46,55 @@ namespace PetManagementSystem.Web.Controllers
             }
 
             var response = await _api.GetAsync<JsonElement?>(endpoint);
-            
             List<PetViewModel> pets = new List<PetViewModel>();
             
-            if (response != null && response.Value.TryGetProperty("data", out var data))
+            if (response != null)
             {
-                pets = JsonSerializer.Deserialize<List<PetViewModel>>(data.GetRawText()) ?? new List<PetViewModel>();
+                JsonElement petData = default;
+                if (response.Value.TryGetProperty("data", out petData) || response.Value.TryGetProperty("Data", out petData))
+                {
+                    pets = JsonSerializer.Deserialize<List<PetViewModel>>(petData.GetRawText(), options) ?? new List<PetViewModel>();
+                }
             }
 
             return View(pets);
         }
 
-        [HttpGet]
-        public IActionResult AddPet()
+        public async Task<IActionResult> Profile()
         {
+            int? supplierId = AuthHelper.GetUserId(Request);
+            if (supplierId == null) return RedirectToAction("Login", "Auth");
+
+            var response = await _api.GetAsync<JsonElement?>($"Supplier/{supplierId}");
+            
+            SupplierViewModel supplier = new SupplierViewModel();
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            if (response != null && response.Value.TryGetProperty("data", out var data))
+            {
+                supplier = JsonSerializer.Deserialize<SupplierViewModel>(data.GetRawText(), options) ?? new SupplierViewModel();
+            }
+
+            return View(supplier);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddPet()
+        {
+            var response = await _api.GetAsync<JsonElement?>("Categories");
+            var categories = new List<CategoryViewModel>();
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            if (response != null)
+            {
+                JsonElement dataElement = default;
+                if (response.Value.TryGetProperty("data", out dataElement) || response.Value.TryGetProperty("Data", out dataElement))
+                {
+                    categories = JsonSerializer.Deserialize<List<CategoryViewModel>>(dataElement.GetRawText(), options) ?? new List<CategoryViewModel>();
+                }
+            }
+
+            ViewBag.Categories = categories;
             return View(new PetViewModel());
         }
 
@@ -52,13 +102,24 @@ namespace PetManagementSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPet(PetViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                // Re-fetch categories if model state is invalid
+                var catResponse = await _api.GetAsync<JsonElement?>("Categories");
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                if (catResponse != null)
+                {
+                    JsonElement dataElement = default;
+                    if (catResponse.Value.TryGetProperty("data", out dataElement) || catResponse.Value.TryGetProperty("Data", out dataElement))
+                    {
+                        ViewBag.Categories = JsonSerializer.Deserialize<List<CategoryViewModel>>(dataElement.GetRawText(), options);
+                    }
+                }
+                return View(model);
+            }
 
             int? supplierId = AuthHelper.GetUserId(Request);
-            
-            // For a beginner project, we'll assume the API allows creating a pet 
-            // and linking it to the supplier. 
-            // In a real system, we'd call a specific "SupplyPet" endpoint.
+            if (supplierId == null) return RedirectToAction("Login", "Auth");
             
             var payload = new
             {
@@ -68,14 +129,37 @@ namespace PetManagementSystem.Web.Controllers
                 price = model.Price,
                 description = model.Description,
                 imageUrl = model.ImageUrl,
-                supplierId = supplierId // API might use this to create the relationship
+                categoryId = model.CategoryId
             };
 
-            var result = await _api.PostAsync<object, dynamic>("Pets", payload);
+            var result = await _api.PostAsync<object, JsonElement?>($"Supplier/{supplierId}/pets", payload);
 
-            if (result == null)
+            bool isSuccess = false;
+            if (result != null)
+            {
+                if (result.Value.TryGetProperty("success", out var s1))
+                {
+                    isSuccess = s1.ValueKind == JsonValueKind.True;
+                }
+                else if (result.Value.TryGetProperty("Success", out var s2))
+                {
+                    isSuccess = s2.ValueKind == JsonValueKind.True;
+                }
+            }
+
+            if (!isSuccess)
             {
                 TempData["ErrorMessage"] = "Failed to add pet to inventory.";
+                var catResponse = await _api.GetAsync<JsonElement?>("Categories");
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                if (catResponse != null)
+                {
+                    JsonElement dataElement = default;
+                    if (catResponse.Value.TryGetProperty("data", out dataElement) || catResponse.Value.TryGetProperty("Data", out dataElement))
+                    {
+                        ViewBag.Categories = JsonSerializer.Deserialize<List<CategoryViewModel>>(dataElement.GetRawText(), options);
+                    }
+                }
                 return View(model);
             }
 

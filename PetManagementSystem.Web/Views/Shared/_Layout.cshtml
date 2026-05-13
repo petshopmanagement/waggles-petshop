@@ -80,9 +80,17 @@
                 {
                     <!-- Supplier Navigation -->
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Supplier" asp-action="Dashboard">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")" 
+                           asp-controller="Supplier" asp-action="Dashboard">
                             <i class="fa-solid fa-boxes-packing"></i>
                             <span>My Supply</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")" 
+                           asp-controller="Supplier" asp-action="Profile">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>My Profile</span>
                         </a>
                     </li>
                 }
@@ -155,13 +163,6 @@
                 }
             </div>
 
-            <div class="d-flex align-items-center gap-4">
-                <a href="#" class="text-muted position-relative">
-                    <i class="fa-regular fa-bell fa-lg"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-                </a>
-                <a href="#" class="text-muted"><i class="fa-regular fa-envelope fa-lg"></i></a>
-            </div>
         </nav>
 
         <!-- Body Content -->

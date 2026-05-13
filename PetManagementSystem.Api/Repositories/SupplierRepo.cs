@@ -67,6 +67,23 @@ namespace PetManagementSystem.Api.Repositories
             return pets.ToList();
         }
 
+        public async Task<Pet> AddPetToSupplierAsync(int supplierId, Pet pet)
+        {
+            var supplier = await _context.Suppliers
+                .Include(s => s.Pets)
+                .FirstOrDefaultAsync(s => s.SupplierId == supplierId);
+
+            if (supplier == null) return null;
+
+            _context.Pets.Add(pet);
+            await _context.SaveChangesAsync(); // Get PetId
+
+            supplier.Pets.Add(pet);
+            await _context.SaveChangesAsync();
+
+            return pet;
+        }
+
         
     }
 }

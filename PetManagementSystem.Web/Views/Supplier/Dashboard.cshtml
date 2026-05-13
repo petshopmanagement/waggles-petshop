@@ -54,10 +54,13 @@
             <form asp-action="Dashboard" method="get" class="d-flex gap-2">
                 <select name="categoryId" class="form-select border-0 bg-light small rounded-pill px-3" style="width: 150px;" onchange="this.form.submit()">
                     <option value="0" selected="@(Context.Request.Query["categoryId"] == "0")">All Categories</option>
-                    <option value="1" selected="@(Context.Request.Query["categoryId"] == "1")">Dogs</option>
-                    <option value="2" selected="@(Context.Request.Query["categoryId"] == "2")">Cats</option>
-                    <option value="3" selected="@(Context.Request.Query["categoryId"] == "3")">Birds</option>
-                    <option value="4" selected="@(Context.Request.Query["categoryId"] == "4")">Small Pets</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        foreach (var cat in (List<PetManagementSystem.Web.Models.CategoryViewModel>)ViewBag.Categories)
+                        {
+                            <option value="@cat.CategoryId" selected="@(Context.Request.Query["categoryId"] == cat.CategoryId.ToString())">@cat.Name</option>
+                        }
+                    }
                 </select>
                 <div class="input-group" style="width: 250px;">
                     <span class="input-group-text bg-light border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
@@ -90,13 +93,13 @@
                                         <i class="fa-solid fa-paw text-primary small"></i>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0 fw-bold">@pet.Name</h6>
-                                        <small class="text-muted">ID: #@pet.PetId</small>
+                                        <h6 class="mb-0 fw-bold">@(pet.Name ?? "Unnamed Pet")</h6>
+                                        <small class="text-muted">ID: #@(pet.PetId != 0 ? pet.PetId.ToString() : "N/A")</small>
                                     </div>
                                 </div>
                             </td>
-                            <td>@pet.Breed</td>
-                            <td class="fw-bold text-dark">$@pet.Price</td>
+                            <td>@(pet.Breed ?? "Unknown")</td>
+                            <td class="fw-bold text-dark">$@(pet.Price?.ToString("N2") ?? "0.00")</td>
                             <td>
                                 <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Available</span>
                             </td>

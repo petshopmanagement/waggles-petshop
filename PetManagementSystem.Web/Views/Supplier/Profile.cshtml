@@ -1,0 +1,131 @@
+@model PetManagementSystem.Web.Models.SupplierViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1">My Supplier Profile</h2>
+        <p class="text-muted">Manage your business information and contact details.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <!-- Profile Summary Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white">
+            <div class="mx-auto mb-4 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                 style="width: 120px; height: 120px;">
+                <i class="fa-solid fa-store fa-4x text-primary"></i>
+            </div>
+            <h4 class="fw-bold mb-1">@Model.Name</h4>
+            <p class="text-muted mb-4">Official Waggles Supplier</p>
+            
+            <div class="d-flex justify-content-center gap-2 mb-2">
+                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Verified Partner</span>
+            </div>
+        </div>
+        
+        <!-- Contact Quick Info -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mt-4 bg-white">
+            <h6 class="fw-bold mb-4">Contact Information</h6>
+            <div class="d-flex align-items-start gap-3 mb-4">
+                <div class="bg-light p-2 rounded-3 text-muted">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Contact Person</small>
+                    <span class="fw-semibold">@Model.ContactPerson</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-start gap-3 mb-4">
+                <div class="bg-light p-2 rounded-3 text-muted">
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Phone Number</small>
+                    <span class="fw-semibold">@Model.PhoneNumber</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-start gap-3">
+                <div class="bg-light p-2 rounded-3 text-muted">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Email Address</small>
+                    <span class="fw-semibold">@Model.Email</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Business Details -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+            <div class="card-header bg-white border-bottom p-4">
+                <h5 class="fw-bold mb-0">Business Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Shop Name</label>
+                        <div class="p-3 bg-light rounded-3 fw-semibold">@Model.Name</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Supplier ID</label>
+                        <div class="p-3 bg-light rounded-3 fw-semibold">#@Model.SupplierId</div>
+                    </div>
+                    
+                    <div class="col-12 mt-5">
+                        <h6 class="fw-bold mb-3 border-bottom pb-2">Business Address</h6>
+                    </div>
+                    
+                    @if (Model.Address != null)
+                    {
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Street Address</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold">@Model.Address.Street</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">City</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold">@Model.Address.City</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">State</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold">@Model.Address.State</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Zip Code</label>
+                            <div class="p-3 bg-light rounded-3 fw-semibold">@Model.Address.ZipCode</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center py-4 text-muted bg-light rounded-4">
+                            <i class="fa-solid fa-location-dot mb-2"></i>
+                            <p class="mb-0">Address information not available.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-footer bg-light p-4 border-0 text-end">
+                <button class="btn btn-primary rounded-pill px-5 shadow-sm disabled">
+                    <i class="fa-solid fa-pen-to-square me-2"></i>Edit Profile
+                </button>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mt-4 bg-white border-start border-primary border-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Account Active</h6>
+                    <p class="text-muted small mb-0">Your supplier account is in good standing and all listings are public.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
