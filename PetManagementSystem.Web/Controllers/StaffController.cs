@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using PetManagementSystem.Web.Helpers;
 using PetManagementSystem.Web.Models;
 using PetManagementSystem.Web.Services;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace PetManagementSystem.Web.Controllers
 {
@@ -16,67 +14,36 @@ namespace PetManagementSystem.Web.Controllers
             _api = api;
         }
 
+        // GET: /Staff/Dashboard
         public async Task<IActionResult> Dashboard()
         {
-            // Employees see a similar overview to Admin
-            return RedirectToAction("Dashboard", "Admin");
+            var userId = AuthHelper.GetUserId(Request);
+
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
+            var employee = await _api.GetAsync<EmployeeViewModel>($"employees/{userId}");
+
+            if (employee == null)
+                return NotFound();
+
+            return View(employee);
         }
 
-        public async Task<IActionResult> Inventory(string search, int? categoryId)
+        public async Task<IActionResult> Profile()
         {
-            IEnumerable<PetViewModel>? pets = null;
+            var userId = AuthHelper.GetUserId(Request);
 
-            if (!string.IsNullOrEmpty(search))
-            {
-                pets = await _api.GetAsync<IEnumerable<PetViewModel>>($"pets/name/{search}");
-            }
-            else if (categoryId.HasValue && categoryId > 0)
-            {
-                pets = await _api.GetAsync<IEnumerable<PetViewModel>>($"pets/category/{categoryId}");
-            }
-            else
-            {
-                pets = await _api.GetAsync<IEnumerable<PetViewModel>>("pets");
-            }
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
 
-            return View(pets ?? new List<PetViewModel>());
+            var employee = await _api.GetAsync<EmployeeViewModel>($"employees/{userId}");
+
+            if (employee == null)
+                return NotFound();
+
+            return View(employee);
         }
 
-        public async Task<IActionResult> Services()
-        {
-            // Fetch all grooming services and vaccinations
-            var groomingResponse = await _api.GetAsync<JsonElement?>("GroomingServices");
-            var vaccinationResponse = await _api.GetAsync<JsonElement?>("Vaccinations");
-
-            ViewBag.Grooming = groomingResponse;
-            ViewBag.Vaccinations = vaccinationResponse;
-
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> EditPet(int id)
-        {
-            var pet = await _api.GetAsync<PetViewModel>($"pets/{id}");
-            if (pet == null) return NotFound();
-            return View(pet);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPet(PetViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            var result = await _api.PutAsync<PetViewModel, dynamic>($"pets/{model.PetId}", model);
-            if (result == null)
-            {
-                TempData["ErrorMessage"] = "Failed to update pet details.";
-                return View(model);
-            }
-
-            TempData["SuccessMessage"] = "Pet updated successfully!";
-            return RedirectToAction("Inventory");
-        }
     }
 }

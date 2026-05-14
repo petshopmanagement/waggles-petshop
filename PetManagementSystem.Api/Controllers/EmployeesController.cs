@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
@@ -10,6 +6,11 @@ using PetManagementSystem.Api.Data;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Models;
 using PetManagementSystem.Api.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PetManagementSystem.Api.Controllers
 {
@@ -63,6 +64,22 @@ namespace PetManagementSystem.Api.Controllers
         {
             var pets = await _employeeService.GetPetsByEmpIdAsync(id);
             return Ok(pets);
+        }
+
+        // Login POST action in MVC
+        [HttpGet("profile/me")]
+        public async Task<IActionResult> GetProfile()
+        {
+            // Extract employee ID from JWT claims
+            var empIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (empIdClaim == null || !int.TryParse(empIdClaim, out int empId))
+                return Unauthorized(new { message = "Invalid or missing token." });
+
+            var emp = await _employeeService.GetEmpByIdAsync(empId);
+            if (emp == null)
+                return NotFound(new { message = "Employee profile not found." });
+
+            return Ok(emp);
         }
 
     }
