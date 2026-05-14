@@ -1,4 +1,4 @@
-@model IEnumerable<dynamic>
+@model IEnumerable<PetManagementSystem.Web.Models.TransactionViewModel>
 @{
     ViewData["Title"] = "Transaction History";
 }
@@ -30,24 +30,25 @@
                     {
                         <tr>
                             <td class="py-3 px-4">
-                                <span class="fw-bold text-primary">#@t.GetProperty("transactionId")</span>
+                                <span class="fw-bold text-primary">#@t.TransactionId</span>
                             </td>
                             <td class="py-3">
                                 <div class="d-flex align-items-center gap-2">
                                     <i class="fa-solid fa-paw text-muted small"></i>
-                                    <span class="fw-bold">@t.GetProperty("petName")</span>
+                                    <span class="fw-bold">@t.PetName</span>
                                 </div>
                             </td>
                             <td class="py-3 text-muted">
-                                @DateTime.Parse(t.GetProperty("transactionDate").ToString()).ToString("MMM dd, yyyy")
+                                @(t.TransactionDate?.ToString("MMM dd, yyyy") ?? "N/A")
                             </td>
                             <td class="py-3 text-end fw-bold text-dark">
-                                $@string.Format("{0:N2}", decimal.Parse(t.GetProperty("amount").ToString()))
+                                $@string.Format("{0:N2}", t.Amount ?? 0)
                             </td>
                             <td class="py-3 text-center">
                                 @{
-                                    var status = t.GetProperty("transactionStatus").ToString();
-                                    var badgeClass = status.ToLower() switch {
+                                    var status = t.TransactionStatus ?? "Unknown";
+                                    var badgeClass = status.ToLower() switch
+                                    {
                                         "success" => "bg-success",
                                         "pending" => "bg-warning",
                                         "failed" => "bg-danger",

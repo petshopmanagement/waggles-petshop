@@ -68,20 +68,25 @@ namespace PetManagementSystem.Web.Controllers
             var pet = await _api.GetAsync<PetViewModel>($"pets/{petId}");
             if (pet == null) return RedirectToAction("Failure");
 
-            // Create transaction payload
-            var payload = new
+            // Create transaction payload using strongly typed DTO
+            var payload = new CreateTransactionDto
             {
-                customerId = customerId,
-                petId = petId,
-                transactionDate = DateTime.Now.ToString("yyyy-MM-dd"),
-                amount = pet.Price ?? 0,
-                transactionStatus = "Success" // In a real app, this depends on payment gateway result
+                CustomerId = customerId,
+                PetId = petId,
+                TransactionDate = DateOnly.FromDateTime(DateTime.Now),
+                Amount = pet.Price ?? 0,
+                TransactionStatus = "Success"
             };
 
-            // Fix route to 'transactions' (plural) as per API controller
-            var result = await _api.PostAsync<object, dynamic>("transactions", payload);
+            // Process the transaction via API
+            var result = await _api.PostAsync<CreateTransactionDto, TransactionViewModel>("transactions", payload);
 
-            // FOR DEMO: Always show success to ensure a smooth presentation
+            if (result == null)
+            {
+                // In case of failure, we'll show the failure page for better feedback
+                return RedirectToAction("Failure");
+            }
+
             return RedirectToAction("Success", new { petName = pet.Name });
         }
 

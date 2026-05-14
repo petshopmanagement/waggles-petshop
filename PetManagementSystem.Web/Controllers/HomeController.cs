@@ -17,6 +17,12 @@ namespace PetManagementSystem.Web.Controllers
 
         public async Task<IActionResult> Index(string search, int? categoryId)
         {
+
+            var role = Helpers.AuthHelper.GetRole(Request);
+            if (role == "Employee") return RedirectToAction("Dashboard", "Staff");
+            if (role == "Supplier") return RedirectToAction("Dashboard", "Supplier");
+            if (role == "Admin") return RedirectToAction("Dashboard", "Admin");
+
             IEnumerable<PetViewModel>? pets = null;
 
             // 1. Handle Search Query

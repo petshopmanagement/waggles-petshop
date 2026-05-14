@@ -14,10 +14,10 @@
             <label class="small fw-bold text-muted d-block mb-2">Filter by Category</label>
             <select name="categoryId" class="form-select border-0 shadow-sm rounded-pill px-4" onchange="this.form.submit()">
                 <option value="0" selected="@(Context.Request.Query["categoryId"] == "0")">All Categories</option>
-                <option value="1" selected="@(Context.Request.Query["categoryId"] == "1")">Dogs</option>
-                <option value="2" selected="@(Context.Request.Query["categoryId"] == "2")">Cats</option>
+                <option value="1" selected="@(Context.Request.Query["categoryId"] == "1")">Cats</option>
+                <option value="2" selected="@(Context.Request.Query["categoryId"] == "2")">Dogs</option>
                 <option value="3" selected="@(Context.Request.Query["categoryId"] == "3")">Birds</option>
-                <option value="4" selected="@(Context.Request.Query["categoryId"] == "4")">Small Pets</option>
+               
             </select>
         </form>
     </div>

@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Web.Helpers;
 using PetManagementSystem.Web.Models;
@@ -21,13 +22,13 @@ namespace PetManagementSystem.Web.Controllers
             int? userId = AuthHelper.GetUserId(Request);
             if (userId == null) return RedirectToAction("Login", "Auth");
 
-            var profile = await _api.GetAsync<dynamic>($"customers/{userId}/profile");
-            var transactions = await _api.GetAsync<IEnumerable<dynamic>>($"transactions/customer/{userId}");
-            
+            var profile = await _api.GetAsync<CustomerViewModel>($"customers/{userId}/profile");
+            var transactions = await _api.GetAsync<IEnumerable<TransactionViewModel>>($"transactions/customer/{userId}");
+
             var viewModel = new CustomerDashboardViewModel
             {
                 Profile = profile,
-                Transactions = transactions ?? new List<dynamic>()
+                Transactions = transactions ?? new List<TransactionViewModel>()
             };
 
             return View(viewModel);
@@ -50,8 +51,8 @@ namespace PetManagementSystem.Web.Controllers
             int? userId = AuthHelper.GetUserId(Request);
             if (userId == null) return RedirectToAction("Login", "Auth");
 
-            var transactions = await _api.GetAsync<IEnumerable<dynamic>>($"transactions/customer/{userId}");
-            return View(transactions ?? new List<dynamic>());
+            var transactions = await _api.GetAsync<IEnumerable<TransactionViewModel>>($"transactions/customer/{userId}");
+            return View(transactions ?? new List<TransactionViewModel>());
         }
     }
 }

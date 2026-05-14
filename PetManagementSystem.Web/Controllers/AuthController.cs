@@ -90,6 +90,9 @@ namespace PetManagementSystem.Web.Controllers
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
+                if (role == "Employee") return RedirectToAction("Dashboard", "Staff");
+                if (role == "Supplier") return RedirectToAction("Dashboard", "Supplier");
+                if (role == "Admin") return RedirectToAction("Dashboard", "Admin");
 
                 return RedirectToAction("Index", "Home");
             }
@@ -183,6 +186,67 @@ namespace PetManagementSystem.Web.Controllers
             }
 
             TempData["SuccessMessage"] = "Registration successful! Please login.";
+            return RedirectToAction("Login");
+        }
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var payload = new
+            {
+                Role = model.Role,
+                Email = model.Email,
+                OldPassword = model.OldPassword,
+                NewPassword = model.NewPassword
+            };
+
+            var response = await _api.PostAsync<object, JsonElement?>("auth/change-password", payload);
+
+            if (response == null)
+            {
+                ModelState.AddModelError(string.Empty, "The server is currently unavailable. Please try again later.");
+                return View(model);
+            }
+
+            if (response.Value.ValueKind == JsonValueKind.Object && response.Value.TryGetProperty("errors", out var apiErrors))
+            {
+                if (apiErrors.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var error in apiErrors.EnumerateArray())
+                    {
+                        ModelState.AddModelError(string.Empty, error.GetString() ?? "Validation error.");
+                    }
+                }
+                else if (apiErrors.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (var errorField in apiErrors.EnumerateObject())
+                    {
+                        foreach (var errorMessage in errorField.Value.EnumerateArray())
+                        {
+                            ModelState.AddModelError(string.Empty, $"{errorField.Name}: {errorMessage.GetString()}");
+                        }
+                    }
+                }
+                return View(model);
+            }
+
+            if (response.Value.TryGetProperty("success", out var success) && !success.GetBoolean())
+            {
+                var error = response.Value.TryGetProperty("message", out var msg) ? msg.GetString() : "Password change failed.";
+                ModelState.AddModelError(string.Empty, error ?? "Password change failed.");
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Password changed successfully! Please login with your new password.";
             return RedirectToAction("Login");
         }
 

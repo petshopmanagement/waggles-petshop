@@ -36,18 +36,49 @@ namespace PetManagementSystem.Web.Models
         public string Role { get; set; } = "Customer";
 
         // Profile fields
+        [Required]
         public string? FirstName { get; set; }
+        [Required]
         public string? LastName { get; set; }
-        public string? Name { get; set; } // For Supplier/Company Name
-        public string? ContactPerson { get; set; } // Required by API for Suppliers
-        public string? Position { get; set; } // Required by API for Employees
+        [Required]
+        public string? Name { get; set; }
+        [Required]
+        public string? ContactPerson { get; set; }
+        [Required]
+        public string? Position { get; set; }
+        [Required]
         public string? PhoneNumber { get; set; }
-        
+
         // Address fields
         public string? Street { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
         public string? ZipCode { get; set; }
         public string? Country { get; set; }
+    }
+
+    public class ChangePasswordViewModel
+    {
+        [Required]
+        public string Role { get; set; } = "Customer";
+
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Old Password")]
+        [DataType(DataType.Password)]
+        public string OldPassword { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "New Password")]
+        [DataType(DataType.Password)]
+        public string NewPassword { get; set; } = string.Empty;
+
+        [Required]
+        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        [Display(Name = "Confirm New Password")]
+        [DataType(DataType.Password)]
+        public string ConfirmNewPassword { get; set; } = string.Empty;
     }
 }

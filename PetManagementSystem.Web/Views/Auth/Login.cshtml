@@ -36,7 +36,10 @@
                 </div>
 
                 <div class="mb-5">
-                    <label asp-for="Password" class="form-label fw-bold small text-uppercase">Password</label>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label asp-for="Password" class="form-label fw-bold small text-uppercase mb-0">Password</label>
+                        <a asp-action="ChangePassword" class="text-primary small text-decoration-none fw-bold">Forgot Password?</a>
+                    </div>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-0"><i class="fa-solid fa-key text-muted"></i></span>
                         <input asp-for="Password" class="form-control bg-light border-0 py-2" placeholder="••••••••" />

@@ -36,14 +36,19 @@ namespace PetManagementSystem.Web.Services
             var response = await _client.PostAsync(endpoint, content);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            // Try to deserialize the response regardless of success code
-            // Many APIs return error details in the body (e.g. { success: false, message: "..." })
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"[API POST ERROR] Status: {response.StatusCode}, Content: {responseContent}");
+                return default;
+            }
+
             try 
             {
                 return JsonSerializer.Deserialize<TResponse>(responseContent, _options);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[API DESERIALIZATION ERROR]: {ex.Message} \n {responseContent}");
                 return default;
             }
         }

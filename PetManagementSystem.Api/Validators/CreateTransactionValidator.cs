@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Helpers;
 
@@ -22,7 +22,7 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionDto
 
         RuleFor(x => x.TransactionDate)
             .NotNull().WithMessage("Transaction date is required.")
-            .Must(d => d <= DateOnly.FromDateTime(DateTime.UtcNow))
+            .Must(d => d <= DateOnly.FromDateTime(DateTime.Now).AddDays(1))
             .WithMessage("Transaction date cannot be in the future.");
 
         RuleFor(x => x.TransactionStatus)

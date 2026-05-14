@@ -1,7 +1,7 @@
 @model PetManagementSystem.Web.Models.CustomerDashboardViewModel
 @{
     ViewData["Title"] = "My Profile";
-    var profile = Model.Profile;
+    var profile = Model?.Profile;
 }
 
 <div class="row mb-4">
@@ -28,56 +28,59 @@
             </div>
             
             <div class="row g-4">
-                <div class="col-md-6">
-                    <label class="small text-muted d-block text-uppercase fw-bold mb-1">First Name</label>
-                    <div class="p-3 bg-light rounded-3 fw-bold text-dark">
-                        @profile.GetProperty("firstName")
+                @if (profile != null)
+                {
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block text-uppercase fw-bold mb-1">First Name</label>
+                        <div class="p-3 bg-light rounded-3 fw-bold text-dark">
+                            @profile.FirstName
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <label class="small text-muted d-block text-uppercase fw-bold mb-1">Last Name</label>
-                    <div class="p-3 bg-light rounded-3 fw-bold text-dark">
-                        @profile.GetProperty("lastName")
+                    <div class="col-md-6">
+                        <label class="small text-muted d-block text-uppercase fw-bold mb-1">Last Name</label>
+                        <div class="p-3 bg-light rounded-3 fw-bold text-dark">
+                            @profile.LastName
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <label class="small text-muted d-block text-uppercase fw-bold mb-1">Email Address</label>
-                    <div class="p-3 bg-light rounded-3 fw-bold text-dark">
-                        @profile.GetProperty("email")
+                    <div class="col-md-12">
+                        <label class="small text-muted d-block text-uppercase fw-bold mb-1">Email Address</label>
+                        <div class="p-3 bg-light rounded-3 fw-bold text-dark">
+                            @profile.Email
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <label class="small text-muted d-block text-uppercase fw-bold mb-1">Phone Number</label>
-                    <div class="p-3 bg-light rounded-3 fw-bold text-dark">
-                        @{
-                            System.Text.Json.JsonElement phone;
-                            bool hasPhone = profile.TryGetProperty("phoneNumber", out phone);
-                        }
-                        @(hasPhone && phone.ValueKind != System.Text.Json.JsonValueKind.Null ? phone.GetString() : "Not provided")
+                    <div class="col-md-12">
+                        <label class="small text-muted d-block text-uppercase fw-bold mb-1">Phone Number</label>
+                        <div class="p-3 bg-light rounded-3 fw-bold text-dark">
+                            @(profile.PhoneNumber ?? "Not provided")
+                        </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            Profile information could not be loaded. Please try again later.
+                        </div>
+                    </div>
+                }
             </div>
 
             <h5 class="fw-bold mt-5 mb-4">Shipping & Delivery</h5>
             <div class="p-4 bg-light rounded-4 border border-dashed border-primary border-opacity-25">
-                @{
-                    System.Text.Json.JsonElement addr;
-                    bool hasAddr = profile.TryGetProperty("address", out addr);
-                }
-                @if (hasAddr && addr.ValueKind != System.Text.Json.JsonValueKind.Null)
+                @if (profile?.Address != null)
                 {
                     <div class="row g-3">
                         <div class="col-md-6">
                             <small class="text-muted d-block">Street Address</small>
-                            <span class="fw-bold">@addr.GetProperty("street")</span>
+                            <span class="fw-bold">@profile.Address.Street</span>
                         </div>
                         <div class="col-md-3">
                             <small class="text-muted d-block">City</small>
-                            <span class="fw-bold">@addr.GetProperty("city")</span>
+                            <span class="fw-bold">@profile.Address.City</span>
                         </div>
                         <div class="col-md-3">
                             <small class="text-muted d-block">State/Zip</small>
-                            <span class="fw-bold">@addr.GetProperty("state") @addr.GetProperty("zipCode")</span>
+                            <span class="fw-bold">@profile.Address.State @profile.Address.ZipCode</span>
                         </div>
                     </div>
                 }
@@ -111,8 +114,8 @@
                                     <i class="fa-solid fa-paw text-primary"></i>
                                 </div>
                                 <div>
-                                    <h6 class="fw-bold mb-0">@t.GetProperty("petName")</h6>
-                                    <small class="text-muted">Adopted: @DateTime.Parse(t.GetProperty("transactionDate").ToString()).ToString("MMM yyyy")</small>
+                                    <h6 class="fw-bold mb-0">@t.PetName</h6>
+                                    <small class="text-muted">Adopted: @(t.TransactionDate?.ToString("MMM yyyy") ?? "Recent")</small>
                                 </div>
                                 <i class="fa-solid fa-chevron-right ms-auto text-muted opacity-50"></i>
                             </div>

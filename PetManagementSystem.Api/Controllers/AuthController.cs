@@ -27,6 +27,7 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<AuthResponse>.SuccessResponse(response));
     }
 
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
