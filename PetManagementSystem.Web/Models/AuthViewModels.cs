@@ -35,18 +35,12 @@ namespace PetManagementSystem.Web.Models
         [Required]
         public string Role { get; set; } = "Customer";
 
-        // Profile fields
-        [Required]
+        // Profile fields (role-conditional — NOT [Required] here; API FluentValidation enforces per-role)
         public string? FirstName { get; set; }
-        [Required]
         public string? LastName { get; set; }
-        [Required]
         public string? Name { get; set; }
-        [Required]
         public string? ContactPerson { get; set; }
-        [Required]
         public string? Position { get; set; }
-        [Required]
         public string? PhoneNumber { get; set; }
 
         // Address fields

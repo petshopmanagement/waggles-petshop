@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
@@ -34,6 +34,8 @@ namespace PetManagementSystem.Api.Controllers
         public async Task<IActionResult> GetByEmpId(int id)
         {
             var emp = await _employeeService.GetEmpByIdAsync(id);
+            if (emp == null)
+                return NotFound();
             return Ok(emp);
         }
 

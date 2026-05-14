@@ -36,14 +36,14 @@ namespace PetManagementSystem.Web.Services
             var response = await _client.PostAsync(endpoint, content);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"[API POST ERROR] Status: {response.StatusCode}, Content: {responseContent}");
+            Console.WriteLine($"[API POST] {endpoint} → {(int)response.StatusCode}: {responseContent}");
+
+            if (string.IsNullOrWhiteSpace(responseContent))
                 return default;
-            }
 
             try 
             {
+                // Always deserialize — even error responses contain useful JSON (success:false, message, errors)
                 return JsonSerializer.Deserialize<TResponse>(responseContent, _options);
             }
             catch (Exception ex)
