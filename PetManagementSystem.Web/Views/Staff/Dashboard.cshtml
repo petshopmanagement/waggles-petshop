@@ -1,0 +1,88 @@
+﻿@model PetManagementSystem.Web.Models.EmployeeViewModel
+@{
+    ViewData["Title"] = "My Assigned Pets";
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">My Assigned Pets</h2>
+    <p class="text-muted mb-0">
+        @(Model.Pets?.Count ?? 0) pets are assigned to @Model.FullName.
+    </p>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-0">
+
+        @if (Model.Pets != null && Model.Pets.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr class="text-uppercase small text-muted">
+                            <th class="px-4 py-3">Pet Details</th>
+                            <th class="px-4 py-3">Breed</th>
+                            <th class="px-4 py-3">Age</th>
+                            <th class="px-4 py-3">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pet in Model.Pets)
+                        {
+                            <tr>
+                                
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                      
+                                        <div class="bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center"
+                                             style="width:50px; height:50px;">
+                                            <i class="fa-solid fa-paw text-primary"></i>
+                                        </div>
+
+                                        <div>
+                                            <div class="fw-bold text-dark">
+                                                @pet.Name
+                                            </div>
+                                            <small class="text-muted">
+                                                ID: #@pet.PetId
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    @(pet.Breed ?? "N/A")
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    @(pet.Age?.ToString() ?? "N/A")
+                                </td>
+
+                                <td class="px-4 py-3" style="max-width: 300px;">
+                                    <span class="text-muted small">
+                                        @(string.IsNullOrWhiteSpace(pet.Description)
+                                            ? "No description available."
+                                            : pet.Description)
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width:80px; height:80px;">
+                    <i class="fa-solid fa-paw fa-2x text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold">No Assigned Pets</h5>
+                <p class="text-muted mb-0">
+                    There are currently no pets assigned to @Model.FullName.
+                </p>
+            </div>
+        }
+
+    </div>
+</div>

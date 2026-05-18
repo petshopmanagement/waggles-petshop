@@ -1,0 +1,105 @@
+@model IEnumerable<PetManagementSystem.Web.Models.TransactionViewModel>
+@{
+    ViewData["Title"] = "Transaction History";
+}
+
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1">Transaction History</h2>
+        <p class="text-muted">Review your recent pet adoptions and purchases.</p>
+    </div>
+</div>
+
+<div class="custom-card border-0 shadow-sm p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="bg-light">
+                <tr class="small text-muted text-uppercase">
+                    <th class="py-3 px-4">Transaction ID</th>
+                    <th class="py-3">Pet Name</th>
+                    <th class="py-3">Date</th>
+                    <th class="py-3 text-end">Amount</th>
+                    <th class="py-3 text-center">Status</th>
+                    <th class="py-3 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var t in Model)
+                    {
+                        <tr>
+                            <td class="py-3 px-4">
+                                <span class="fw-bold text-primary">#@t.TransactionId</span>
+                            </td>
+                            <td class="py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-paw text-muted small"></i>
+                                    <span class="fw-bold">@t.PetName</span>
+                                </div>
+                            </td>
+                            <td class="py-3 text-muted">
+                                @(t.TransactionDate?.ToString("MMM dd, yyyy") ?? "N/A")
+                            </td>
+                            <td class="py-3 text-end fw-bold text-dark">
+                                $@string.Format("{0:N2}", t.Amount ?? 0)
+                            </td>
+                            <td class="py-3 text-center">
+                                @{
+                                    var status = t.TransactionStatus ?? "Unknown";
+                                    var badgeClass = status.ToLower() switch
+                                    {
+                                        "success" => "bg-success",
+                                        "pending" => "bg-warning",
+                                        "failed" => "bg-danger",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeClass bg-opacity-10 text-@badgeClass.Replace("bg-", "") rounded-pill px-3 py-2">
+                                    @status
+                                </span>
+                            </td>
+                            <td class="py-3 text-center">
+                                <button class="btn btn-sm btn-light rounded-circle shadow-sm">
+                                    <i class="fa-solid fa-download text-muted"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-receipt fa-3x opacity-25 mb-3 d-block"></i>
+                            No transactions found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+@if (Model != null && Model.Any())
+{
+    <div class="d-flex justify-content-center mt-4 gap-3">
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a href="@Url.Action("Transactions", new { page = ViewBag.CurrentPage - 1 })" 
+               class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm">
+                <i class="fa-solid fa-arrow-left me-2"></i> Previous
+            </a>
+        }
+        
+        @if (Model.Count() == 10)
+        {
+            <a href="@Url.Action("Transactions", new { page = ViewBag.CurrentPage + 1 })" 
+               class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                See More <i class="fa-solid fa-arrow-right ms-2"></i>
+            </a>
+        }
+    </div>
+}
+

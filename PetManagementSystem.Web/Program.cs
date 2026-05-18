@@ -1,3 +1,5 @@
+using PetManagementSystem.Web.Services;
+
 namespace PetManagementSystem.Web
 {
     public class Program
@@ -9,13 +11,29 @@ namespace PetManagementSystem.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            // 1. Add HttpContextAccessor (needed to read cookies from services)
+            builder.Services.AddHttpContextAccessor();
+
+            // 2. Add Token Handler for HttpClient
+            builder.Services.AddTransient<BearerTokenHandler>();
+
+            // 3. Configure HttpClient for ApiService
+            var apiBaseUrl = builder.Configuration.GetValue<string>("ApiBaseUrl") ?? "https://localhost:7294/api/";
+            builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+            }).AddHttpMessageHandler<BearerTokenHandler>();
+
             var app = builder.Build();
+
+            
+
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -31,6 +49,8 @@ namespace PetManagementSystem.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
+            
         }
     }
 }

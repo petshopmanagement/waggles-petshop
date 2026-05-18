@@ -1,0 +1,98 @@
+@model IEnumerable<PetManagementSystem.Web.Models.PetViewModel>
+@{
+    ViewData["Title"] = "Pet Marketplace";
+}
+
+<!-- Category Filter & Title -->
+<div class="row mb-5 align-items-end">
+    <div class="col-md-8">
+        <h2 class="fw-extrabold mb-1" style="font-weight: 800;">Find your soulmate</h2>
+        <p class="text-muted mb-0">Discover pets waiting for a forever home.</p>
+    </div>
+    <div class="col-md-4">
+        <form asp-action="Index" method="get" id="filterForm" class="text-end">
+            <label class="small fw-bold text-muted d-block mb-2">Filter by Category</label>
+            <select name="categoryId" class="form-select border-0 shadow-sm rounded-pill px-4" onchange="this.form.submit()">
+                <option value="0" selected="@(Context.Request.Query["categoryId"] == "0")">All Categories</option>
+                <option value="1" selected="@(Context.Request.Query["categoryId"] == "1")">Cats</option>
+                <option value="2" selected="@(Context.Request.Query["categoryId"] == "2")">Dogs</option>
+                <option value="3" selected="@(Context.Request.Query["categoryId"] == "3")">Birds</option>
+               
+            </select>
+        </form>
+    </div>
+</div>
+
+<!-- Pet Grid -->
+<div class="row g-4">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var pet in Model)
+        {
+            <div class="col-md-6 col-lg-3">
+                <div class="custom-card p-0 overflow-hidden h-100 border-0 shadow-sm">
+                    <div class="position-relative bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fa-solid fa-paw fa-4x text-primary opacity-25"></i>
+                        <span class="badge bg-white text-dark position-absolute top-0 end-0 m-3 shadow-sm rounded-pill px-3 py-2 fw-bold" style="font-size: 0.75rem;">
+                             $@pet.Price
+                        </span>
+                    </div>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h5 class="fw-bold mb-0 text-dark">@pet.Name</h5>
+                            <i class="fa-regular fa-heart text-muted cursor-pointer"></i>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            <i class="fa-solid fa-location-dot me-1"></i> @pet.Breed &bull; @pet.Age yrs
+                        </p>
+                        <div class="d-flex gap-2 mt-3">
+                            <a asp-controller="Pets" asp-action="Details" asp-route-id="@pet.PetId" class="btn btn-primary w-100 rounded-pill py-2 small fw-bold" style="font-size: 0.8rem;">Adopt Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5">
+            <div class="bg-white custom-card d-inline-block px-5 py-4 border-0 shadow-sm">
+                <i class="fa-solid fa-paw fa-3x text-muted mb-3"></i>
+                <h5 class="fw-bold">No pets found in the marketplace.</h5>
+                <p class="text-muted mb-0">Check back later for new arrivals!</p>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Pagination -->
+@if (Model != null && Model.Any())
+{
+    <div class="d-flex justify-content-center mt-5 gap-3">
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a href="@Url.Action("Index", new { search = Context.Request.Query["search"], categoryId = Context.Request.Query["categoryId"], page = ViewBag.CurrentPage - 1 })" 
+               class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm">
+                <i class="fa-solid fa-arrow-left me-2"></i> Previous
+            </a>
+        }
+        
+        @if (Model.Count() == 10) // Assuming 10 is the page size
+        {
+            <a href="@Url.Action("Index", new { search = Context.Request.Query["search"], categoryId = Context.Request.Query["categoryId"], page = ViewBag.CurrentPage + 1 })" 
+               class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                See More <i class="fa-solid fa-arrow-right ms-2"></i>
+            </a>
+        }
+    </div>
+}
+
+
+@section Scripts {
+    <style>
+        .cursor-pointer { cursor: pointer; transition: color 0.3s; }
+        .cursor-pointer:hover { color: var(--primary-color) !important; }
+        .fw-extrabold { font-weight: 800; }
+        .btn-white:hover { background-color: #f1f1f1 !important; }
+    </style>
+}

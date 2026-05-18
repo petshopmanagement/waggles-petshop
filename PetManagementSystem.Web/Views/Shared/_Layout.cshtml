@@ -1,49 +1,220 @@
-﻿<!DOCTYPE html>
+@using PetManagementSystem.Web.Helpers
+@{
+    bool isLoggedIn = AuthHelper.IsLoggedIn(Context.Request);
+    string? userName = AuthHelper.GetName(Context.Request);
+    string? userRole = AuthHelper.GetRole(Context.Request);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PetManagementSystem.Web</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - Waggles Pet Shop</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/PetManagementSystem.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PetManagementSystem.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a class="sidebar-logo" asp-controller="Home" asp-action="Index">
+            <i class="fa-solid fa-paw"></i>
+            <span>Waggles</span>
+        </a>
+
+        <ul class="sidebar-nav">
+
+            @* Show Marketplace for: guests (not logged in) OR logged-in Customers only *@
+            @if (!isLoggedIn || userRole == "Customer")
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+                           asp-controller="Home" asp-action="Index">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Marketplace</span>
+                    </a>
+                </li>
+            }
+
+            @if (isLoggedIn)
+            {
+                if (AuthHelper.IsAdmin(Context.Request))
+                {
+                    <!-- Admin Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")"
+                               asp-controller="Admin" asp-action="Dashboard">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Employees" ? "active" : "")"
+                               asp-controller="Admin" asp-action="Employees">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>Employees</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Customers" ? "active" : "")"
+                               asp-controller="Admin" asp-action="Customers">
+                            <i class="fa-solid fa-users"></i>
+                            <span>Customers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Suppliers" ? "active" : "")"
+                               asp-controller="Admin" asp-action="Suppliers">
+                            <i class="fa-solid fa-truck"></i>
+                            <span>Suppliers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Services" ? "active" : "")"
+                               asp-controller="Admin" asp-action="Services">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Services</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "PetFood" ? "active" : "")"
+                               asp-controller="Admin" asp-action="PetFood">
+                            <i class="fa-solid fa-bowl-food"></i>
+                            <span>Pet Food</span>
+                        </a>
+                    </li>
+                }
+                else if (AuthHelper.GetRole(Context.Request) == "Employee")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")"
+                               asp-controller="Staff" asp-action="Dashboard">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")"
+                               asp-controller="Staff" asp-action="Profile">
+                            <i class="fa-solid fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                }
+                else if (AuthHelper.GetRole(Context.Request) == "Supplier")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")"
+                               asp-controller="Supplier" asp-action="Dashboard">
+                            <i class="fa-solid fa-boxes-packing"></i>
+                            <span>My Supply</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")"
+                               asp-controller="Supplier" asp-action="Profile">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <!-- Customer Navigation -->
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")" asp-controller="Customer" asp-action="Dashboard">
+                            <i class="fa-solid fa-user me-2"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Transactions" ? "active" : "")" asp-controller="Customer" asp-action="Transactions">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                }
+            }
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="About">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Help Center</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Bottom Sidebar Section (User Profile or Login) -->
+        <div class="mt-auto pt-4 border-top">
+            @if (isLoggedIn)
+            {
+                <div class="d-flex align-items-center gap-3 px-2">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold"
+                         style="width: 40px; height: 40px; font-size: 0.9rem;">
+                        @(userName?.Substring(0, 1).ToUpper() ?? "U")
+                    </div>
+                    <div class="overflow-hidden">
+                        <h6 class="mb-0 text-truncate" style="font-size: 0.9rem;">@userName</h6>
+                        <small class="text-muted" style="font-size: 0.75rem;">@userRole</small>
+                    </div>
+                    <a class="ms-auto text-muted" asp-controller="Auth" asp-action="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
                 </div>
+            }
+            else
+            {
+                <a class="btn btn-primary w-100 rounded-pill" asp-controller="Auth" asp-action="Login">
+                    Login
+                </a>
+            }
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <!-- Navbar -->
+        <nav class="top-navbar">
+            <div class="search-box">
+                @if (ViewContext.RouteData.Values["controller"]?.ToString() == "Home")
+                {
+                    <form asp-controller="Home" asp-action="Index" method="get" class="input-group" style="width: 350px;">
+                        <span class="input-group-text bg-white border-end-0 border-0 shadow-sm rounded-start-pill">
+                            <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control border-0 shadow-sm rounded-end-pill ps-0"
+                               placeholder="Search for your new friend..." value="@Context.Request.Query["search"]">
+                    </form>
+                }
             </div>
+
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+        <!-- Body Content -->
+        <main class="content-body">
             @RenderBody()
         </main>
+
+        <footer class="mt-auto py-4 px-4 text-center text-muted border-top bg-white">
+            <small>&copy; 2026 Waggles Pet Shop - Modern Management System</small>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - PetManagementSystem.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

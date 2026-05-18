@@ -1,0 +1,89 @@
+﻿@model IEnumerable<PetManagementSystem.Web.Models.CustomerViewModel>
+@{
+    ViewData["Title"] = "All Customers";
+}
+
+<div class="row mb-5">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">Customers</h2>
+        <p class="text-muted">All registered customers of Waggles Pet Shop.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <span class="badge bg-success rounded-pill px-4 py-2 fs-6">
+            @Model.Count() Total
+        </span>
+    </div>
+</div>
+
+<div class="card custom-card border-0 shadow-sm p-0 overflow-hidden">
+    <div class="p-4 border-bottom bg-white">
+        <h5 class="fw-bold mb-0">
+            <i class="fa-solid fa-users me-2 text-success"></i>
+            Customer Directory
+        </h5>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr class="small text-uppercase text-muted fw-bold">
+                    <th class="ps-4">#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th class="pe-4">Phone</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int i = 1;
+
+                    foreach (var cust in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-muted small">@i</td>
+
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold"
+                                         style="width: 38px; height: 38px; font-size: 0.85rem; flex-shrink: 0;">
+                                        @(cust.FirstName?.Substring(0, 1).ToUpper() ?? "?")
+                                    </div>
+
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">
+                                            @cust.FirstName @cust.LastName
+                                        </h6>
+                                        <small class="text-muted">
+                                            ID: #@cust.CustomerId
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="small">
+                                @(cust.Email ?? "—")
+                            </td>
+
+                            <td class="pe-4 small">
+                                @(cust.PhoneNumber ?? "—")
+                            </td>
+                        </tr>
+
+                        i++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-users-slash fa-2x mb-3 d-block opacity-30"></i>
+                            No customers found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

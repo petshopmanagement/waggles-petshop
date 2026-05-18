@@ -1,0 +1,163 @@
+@model IEnumerable<PetManagementSystem.Web.Models.PetFoodViewModel>
+@{
+    ViewData["Title"] = "Pet Food Inventory";
+}
+
+<div class="row mb-5">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">Pet Food Management</h2>
+        <p class="text-muted">Monitor and manage your pet food inventory.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <button type="button" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addFoodModal">
+            <i class="fa-solid fa-plus me-2"></i>Add New Food
+        </button>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card custom-card border-0 shadow-sm p-0 overflow-hidden">
+    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">
+            <i class="fa-solid fa-bowl-food me-2 text-warning"></i>Food Inventory
+        </h5>
+        <span class="badge bg-light text-dark border rounded-pill px-3">@Model.Count() Items</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr class="small text-uppercase text-muted fw-bold">
+                    <th class="ps-4">#</th>
+                    <th>Product Name</th>
+                    <th>Brand</th>
+                    <th>Type</th>
+                    <th>Stock Quantity</th>
+                    <th>Price</th>
+                    <th class="pe-4 text-end">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int i = 1;
+                    foreach (var food in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-muted small">@i</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-3 bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center"
+                                         style="width: 42px; height: 42px; flex-shrink: 0;">
+                                        <i class="fa-solid fa-bone"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">@food.Name</h6>
+                                        <small class="text-muted">ID: #@food.FoodId</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="small fw-medium text-dark">@food.Brand</td>
+                            <td>
+                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                                    @food.Type
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold @(food.Quantity < 10 ? "text-danger" : "text-dark")">@food.Quantity</span>
+                                    @if (food.Quantity < 10)
+                                    {
+                                        <span class="badge bg-danger p-1 rounded-circle" title="Low Stock">
+                                            <span class="visually-hidden">Low Stock</span>
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="fw-bold text-success">
+                                ₹@food.Price.ToString("N2")
+                            </td>
+                            <td class="pe-4 text-end">
+                                @if (food.Quantity > 0)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success border-opacity-25 rounded-pill px-3">In Stock</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger-subtle text-danger border border-danger border-opacity-25 rounded-pill px-3">Out of Stock</span>
+                                }
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-bowl-food fa-3x mb-3 d-block opacity-20"></i>
+                            <p class="mb-0">No food items found in inventory.</p>
+                            <small>Click "Add New Food" to start your catalog.</small>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Food Modal -->
+<div class="modal fade" id="addFoodModal" tabindex="-1" aria-labelledby="addFoodModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="addFoodModalLabel">Add New Food Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CreatePetFood" method="post">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Product Name</label>
+                        <input type="text" name="Name" class="form-control rounded-3" placeholder="e.g. Premium Adult Dog Food" required />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Brand</label>
+                            <input type="text" name="Brand" class="form-control rounded-3" placeholder="e.g. Pedigree" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Type</label>
+                            <select name="Type" class="form-select rounded-3" required>
+                                <option value="" selected disabled>Select Type</option>
+                                <option value="Dry">Dry</option>
+                                <option value="Wet">Wet</option>
+                                <option value="Treats">Treats</option>
+                                <option value="Supplement">Supplement</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Initial Quantity</label>
+                            <input type="number" name="Quantity" class="form-control rounded-3" placeholder="0" min="0" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">Price (₹)</label>
+                            <input type="number" step="0.01" name="Price" class="form-control rounded-3" placeholder="0.00" min="0" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 p-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-toggle="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold">Save Food Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
