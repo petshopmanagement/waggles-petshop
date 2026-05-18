@@ -95,6 +95,28 @@
             </tbody>
         </table>
     </div>
+    
+    <!-- Pagination -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="p-4 bg-white border-top d-flex justify-content-center gap-3">
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <a href="@Url.Action("Index", new { search = Context.Request.Query["search"], status = Context.Request.Query["status"], page = ViewBag.CurrentPage - 1 })" 
+                   class="btn btn-outline-primary rounded-pill px-4 fw-bold shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2"></i> Previous
+                </a>
+            }
+            
+            @if (Model.Count() == 10)
+            {
+                <a href="@Url.Action("Index", new { search = Context.Request.Query["search"], status = Context.Request.Query["status"], page = ViewBag.CurrentPage + 1 })" 
+                   class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                    See More <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
+            }
+        </div>
+    }
 </div>
 
 @section Scripts {

@@ -6,6 +6,7 @@ namespace PetManagementSystem.Api.Repositories
     {
 
         Task<IEnumerable<Pet>> GetAllPets(int page = 1, int pageSize = 10);
+        Task<int> GetTotalPetCount();
 
         Task<Pet?> GetPetById(int petid);
 
@@ -25,5 +26,6 @@ namespace PetManagementSystem.Api.Repositories
         Task<IEnumerable<GroomingService>> GetGroomingsByPetId(int petId);
 
         Task<IEnumerable<Vaccination>> GetVaccinationByPetId(int petId);
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
@@ -7,6 +8,7 @@ namespace PetManagementSystem.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class VaccinationsController : ControllerBase
     {
         private readonly IVaccinationService _service;
@@ -17,6 +19,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var vaccinations = await _service.GetAllAsync();
@@ -24,6 +27,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var vaccination = await _service.GetByIdAsync(id);
@@ -31,6 +35,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Create(WriteVaccinationDto dto)
         {
             var createdVaccination = await _service.CreateAsync(dto);
@@ -42,6 +47,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Update(int id, WriteVaccinationDto dto)
         {
             var updatedVaccination = await _service.UpdateAsync(id, dto);
@@ -49,6 +55,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Patch(int id, WriteVaccinationDto dto)
         {
             var updatedVaccination = await _service.PatchAsync(id, dto);

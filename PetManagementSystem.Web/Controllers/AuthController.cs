@@ -48,7 +48,7 @@ namespace PetManagementSystem.Web.Controllers
             {
                 var root = response.Value;
                 
-                // 1. Check if success is true (try both casing)
+
                 bool isSuccess = false;
                 if (root.TryGetProperty("success", out var s1)) isSuccess = s1.GetBoolean();
                 else if (root.TryGetProperty("Success", out var s2)) isSuccess = s2.GetBoolean();
@@ -63,20 +63,20 @@ namespace PetManagementSystem.Web.Controllers
                     return View(model);
                 }
 
-                // 2. Extract Data object
+
                 JsonElement data;
                 if (root.TryGetProperty("data", out var d1)) data = d1;
                 else if (root.TryGetProperty("Data", out var d2)) data = d2;
                 else throw new Exception("Data property missing");
 
-                // 3. Extract properties from Data (try both casing)
+
                 string? token = GetProp(data, "token", "Token");
                 string? role = GetProp(data, "role", "Role");
                 string? name = GetProp(data, "name", "Name");
                 string? email = GetProp(data, "email", "Email");
                 string? userId = GetProp(data, "userId", "UserId");
 
-                // 4. Set cookies
+
                 var cookieOptions = new CookieOptions { HttpOnly = true, SameSite = SameSiteMode.Lax, Expires = DateTime.Now.AddHours(1) };
                 var publicCookieOptions = new CookieOptions { HttpOnly = false, SameSite = SameSiteMode.Lax, Expires = DateTime.Now.AddHours(1) };
 
@@ -123,7 +123,7 @@ namespace PetManagementSystem.Web.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Structure payload based on API expectations
+
             var payload = new
             {
                 Email = model.Email,
@@ -152,12 +152,12 @@ namespace PetManagementSystem.Web.Controllers
                 return View(model);
             }
 
-            // 1. Handle FluentValidation / Custom Middleware Errors (List of Strings)
+
             if (response.Value.ValueKind == JsonValueKind.Object && response.Value.TryGetProperty("errors", out var apiErrors))
             {
                 if (apiErrors.ValueKind == JsonValueKind.Array)
                 {
-                    // Case: ["Error 1", "Error 2"]
+
                     foreach (var error in apiErrors.EnumerateArray())
                     {
                         ModelState.AddModelError(string.Empty, error.GetString() ?? "Validation error.");
@@ -165,7 +165,7 @@ namespace PetManagementSystem.Web.Controllers
                 }
                 else if (apiErrors.ValueKind == JsonValueKind.Object)
                 {
-                    // Case: { "Field": ["Error 1"] }
+
                     foreach (var errorField in apiErrors.EnumerateObject())
                     {
                         foreach (var errorMessage in errorField.Value.EnumerateArray())
@@ -177,7 +177,7 @@ namespace PetManagementSystem.Web.Controllers
                 return View(model);
             }
 
-            // 2. Handle Custom API Logic Errors (success: false)
+
             if (response.Value.TryGetProperty("success", out var success) && !success.GetBoolean())
             {
                 var error = response.Value.TryGetProperty("message", out var msg) ? msg.GetString() : "Registration failed.";

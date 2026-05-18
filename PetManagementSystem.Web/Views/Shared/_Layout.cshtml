@@ -81,6 +81,20 @@
                             <span>Suppliers</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Services" ? "active" : "")"
+                               asp-controller="Admin" asp-action="Services">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                            <span>Services</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "PetFood" ? "active" : "")"
+                               asp-controller="Admin" asp-action="PetFood">
+                            <i class="fa-solid fa-bowl-food"></i>
+                            <span>Pet Food</span>
+                        </a>
+                    </li>
                 }
                 else if (AuthHelper.GetRole(Context.Request) == "Employee")
                 {
@@ -193,7 +207,7 @@
         </main>
 
         <footer class="mt-auto py-4 px-4 text-center text-muted border-top bg-white">
-            <small>&copy; 2024 Waggles Pet Shop - Modern Management System</small>
+            <small>&copy; 2026 Waggles Pet Shop - Modern Management System</small>
         </footer>
     </div>
 

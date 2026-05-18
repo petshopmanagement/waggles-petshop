@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
@@ -8,6 +9,7 @@ namespace PetManagementSystem.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GroomingServicesController : ControllerBase
     {
         private readonly IGroomingServiceService _service;
@@ -18,6 +20,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<IEnumerable<GroomingDTO>>>> GetAll()
         {
             var services = await _service.GetAllAsync();
@@ -25,6 +28,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<GroomingDTO>>> GetById(int id)
         {
             var service = await _service.GetByIdAsync(id);
@@ -32,6 +36,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<ApiResponse<GroomingDTO>>> Create(GroomingDTO dto)
         {
             var createdService = await _service.CreateAsync(dto);
@@ -39,6 +44,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<ApiResponse<string>>> Patch(int id, [FromBody] JsonPatchDocument<GroomingDTO> patchDoc)
         {
             if (patchDoc == null)

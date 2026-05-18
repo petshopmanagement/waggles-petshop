@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
 

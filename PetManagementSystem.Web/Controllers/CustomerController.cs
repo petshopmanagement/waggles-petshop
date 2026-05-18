@@ -23,7 +23,7 @@ namespace PetManagementSystem.Web.Controllers
             if (userId == null) return RedirectToAction("Login", "Auth");
 
             var profile = await _api.GetAsync<CustomerViewModel>($"customers/{userId}/profile");
-            var transactions = await _api.GetAsync<IEnumerable<TransactionViewModel>>($"transactions/customer/{userId}");
+            var transactions = await _api.GetAsync<IEnumerable<TransactionViewModel>>($"transactions/customer/{userId}?page=1&pageSize=10");
 
             var viewModel = new CustomerDashboardViewModel
             {
@@ -46,12 +46,14 @@ namespace PetManagementSystem.Web.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Transactions()
+        public async Task<IActionResult> Transactions(int page = 1)
         {
             int? userId = AuthHelper.GetUserId(Request);
             if (userId == null) return RedirectToAction("Login", "Auth");
 
-            var transactions = await _api.GetAsync<IEnumerable<TransactionViewModel>>($"transactions/customer/{userId}");
+            ViewBag.CurrentPage = page;
+            int pageSize = 10;
+            var transactions = await _api.GetAsync<IEnumerable<TransactionViewModel>>($"transactions/customer/{userId}?page={page}&pageSize={pageSize}");
             return View(transactions ?? new List<TransactionViewModel>());
         }
     }

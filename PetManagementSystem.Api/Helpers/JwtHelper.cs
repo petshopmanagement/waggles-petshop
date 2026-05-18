@@ -19,7 +19,7 @@ public class JwtHelper
     public AuthResponse GenerateToken(string id, string email, string role, string? name)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
-        var secretKey = jwtSettings["Key"] ?? "super_secret_key_that_is_long_enough_for_hmac_sha256_and_even_longer_now_for_hs256_algo";
+        var secretKey = jwtSettings["Key"] ;
 
         var claims = new[]
         {
@@ -33,8 +33,8 @@ public class JwtHelper
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"] ?? "PetStoreApi",
-            audience: jwtSettings["Audience"] ?? "PetStoreClients",
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
             claims: claims,
             expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: creds

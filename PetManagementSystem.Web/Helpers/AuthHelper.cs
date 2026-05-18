@@ -32,6 +32,8 @@ namespace PetManagementSystem.Web.Helpers
             => GetRole(request)?.Equals("Customer", StringComparison.OrdinalIgnoreCase) == true;
         public static bool IsEmployee(HttpRequest request)
             => GetRole(request)?.Equals("Employee", StringComparison.OrdinalIgnoreCase) == true;
+        public static bool IsSupplier(HttpRequest request)
+    => GetRole(request)?.Equals("Supplier", StringComparison.OrdinalIgnoreCase) == true;
 
     }
 }

@@ -11,11 +11,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PetManagementSystem.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -24,6 +26,7 @@ namespace PetManagementSystem.Api.Controllers
             _employeeService = empService;
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllEmployees()
         {
             var emps = await _employeeService.GetAllEmployeesAsync();
@@ -31,6 +34,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> GetByEmpId(int id)
         {
             var emp = await _employeeService.GetEmpByIdAsync(id);
@@ -40,6 +44,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateEmployee(WriteEmployeeDto dto)
         {
             var created = await _employeeService.CreateEmployeeAsync(dto);
@@ -47,6 +52,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateEmployee(int id, WriteEmployeeDto dto)
         {
             var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, dto);
@@ -54,6 +60,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PatchEmployee(int id, WriteEmployeeDto dto)
         {
             var updatedEmployee = await _employeeService.PatchEmployeeAsync(id, dto);
@@ -62,17 +69,18 @@ namespace PetManagementSystem.Api.Controllers
 
 
         [HttpGet("{id}/pets")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> GetPets(int id)
         {
             var pets = await _employeeService.GetPetsByEmpIdAsync(id);
             return Ok(pets);
         }
 
-        // Login POST action in MVC
+    
         [HttpGet("profile/me")]
         public async Task<IActionResult> GetProfile()
         {
-            // Extract employee ID from JWT claims
+            
             var empIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (empIdClaim == null || !int.TryParse(empIdClaim, out int empId))
                 return Unauthorized(new { message = "Invalid or missing token." });

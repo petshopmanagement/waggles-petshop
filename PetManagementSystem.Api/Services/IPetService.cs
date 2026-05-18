@@ -6,6 +6,7 @@ namespace PetManagementSystem.Api.Services
     public interface IPetService
     {
         Task<IEnumerable<PetDto>> GetAllPets(int page = 1, int pageSize = 10);
+        Task<int> GetTotalPetCount();
 
         Task<PetDto?> GetPetById(int petid);
 
@@ -25,5 +26,6 @@ namespace PetManagementSystem.Api.Services
         Task<IEnumerable<GroomingDTO>> GetGroomingsByPetId(int petId);
 
         Task<IEnumerable<VaccinationDto>> GetVaccinationByPetId(int petId);
+
     }
 }

@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
+using System.Security.Claims;
 
 
 namespace PetManagementSystem.Api.Controllers;
@@ -13,6 +14,20 @@ public class CustomersController : ControllerBase
 {
     private readonly ICustomerService _service;
     public CustomersController(ICustomerService service) => _service = service;
+
+    [HttpGet("profile/me")]
+    public async Task<IActionResult> GetCurrentProfile()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            return Unauthorized(new { message = "Invalid or missing token." });
+
+        var customer = await _service.GetProfileAsync(userId);
+        if (customer == null)
+            return NotFound(new { message = "Customer profile not found." });
+
+        return Ok(customer);
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpGet]

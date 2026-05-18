@@ -15,119 +15,133 @@
 </div>
 
 <div class="row g-5">
-    <!-- Pet Image -->
-    <div class="col-lg-7">
-        <div class="custom-card border-0 shadow-sm d-flex align-items-center justify-content-center rounded-5 bg-primary bg-opacity-10" style="min-height: 500px;">
+
+    <div class="col-lg-5">
+        <div class="custom-card border-0 shadow-sm d-flex align-items-center justify-content-center rounded-5 bg-primary bg-opacity-10 mb-5" style="height: 450px;">
             <i class="fa-solid fa-paw fa-10x text-primary opacity-25"></i>
+        </div>
+
+        <div class="px-2">
+            <h5 class="fw-bold text-uppercase mb-4 pb-2 border-bottom border-primary border-3 d-inline-block">About @Model.Name</h5>
+            <p class="text-muted leading-relaxed" style="font-size: 1.1rem;">
+                @if (string.IsNullOrEmpty(Model.Description))
+                {
+                    @($"{Model.Name} is a beautiful {Model.Breed} waiting for a loving home. This pet is friendly, active, and would be a great addition to any family.")
+                }
+                else
+                {
+                    @Model.Description
+                }
+            </p>
         </div>
     </div>
 
-    <!-- Pet Info -->
-    <div class="col-lg-5">
-        <div class="h-100 d-flex flex-column justify-content-center">
-            <div class="mb-4">
-                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-bold mb-3">
-                    @Model.Breed
-                </span>
-                <h1 class="fw-bold display-4 mb-2">@Model.Name</h1>
-                <h3 class="text-primary fw-bold">$@Model.Price</h3>
-            </div>
-
-            <div class="row g-3 mb-5">
-                <div class="col-6">
-                    <div class="p-3 bg-white rounded-4 border shadow-sm">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Age</small>
-                        <span class="fw-bold h5 mb-0">@Model.Age Years</span>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="p-3 bg-white rounded-4 border shadow-sm">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Status</small>
-                        <span class="fw-bold h5 mb-0 text-success">Healthy</span>
-                    </div>
-                </div>
-            </div>
-
+    <div class="col-lg-7">
+        <div class="custom-card border-0 shadow-lg p-5 rounded-5 bg-white h-100">
             <div class="mb-5">
-                <h6 class="fw-bold text-uppercase mb-3">About @Model.Name</h6>
-                <p class="text-muted leading-relaxed mb-4">
-                    @if (string.IsNullOrEmpty(Model.Description))
-                    {
-                        @($"{Model.Name} is a beautiful {Model.Breed} waiting for a loving home. This pet is friendly, active, and would be a great addition to any family.")
-                    }
-                    else
-                    {
-                        @Model.Description
-                    }
-                </p>
-
-                <div class="row g-4 mt-2">
-                    <!-- Food Details -->
-                    @if (ViewBag.Foods != null && ((IEnumerable<System.Text.Json.JsonElement>)ViewBag.Foods).Any())
-                    {
-                        <div class="col-12">
-                            <h6 class="fw-bold text-uppercase small text-muted mb-3"><i class="fa-solid fa-utensils me-2"></i> Food Details</h6>
-                            <div class="row g-2">
-                                @foreach (var food in ViewBag.Foods)
-                                {
-                                    <div class="col-md-6">
-                                        <div class="p-3 bg-light rounded-4 border border-dashed">
-                                            <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">@food.GetProperty("name")</h6>
-                                            <small class="text-muted" style="font-size: 0.8rem;">@food.GetProperty("brand") • @food.GetProperty("type")</small>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-
-                    <!-- Vaccinations -->
-                    @if (ViewBag.Vaccinations != null && ((IEnumerable<System.Text.Json.JsonElement>)ViewBag.Vaccinations).Any())
-                    {
-                        <div class="col-12">
-                            <h6 class="fw-bold text-uppercase small text-muted mb-3"><i class="fa-solid fa-syringe me-2 text-primary"></i> Vaccinations</h6>
-                            <div class="row g-2">
-                                @foreach (var vac in ViewBag.Vaccinations)
-                                {
-                                    <div class="col-md-6">
-                                        <div class="p-3 bg-light rounded-4 border border-dashed">
-                                            <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">@vac.GetProperty("name")</h6>
-                                            <small class="text-muted text-truncate d-block" style="font-size: 0.8rem;">@vac.GetProperty("description")</small>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-
-                    <!-- Grooming Services -->
-                    @if (ViewBag.Groomings != null && ((IEnumerable<System.Text.Json.JsonElement>)ViewBag.Groomings).Any())
-                    {
-                        <div class="col-12">
-                            <h6 class="fw-bold text-uppercase small text-muted mb-3"><i class="fa-solid fa-scissors me-2 text-primary"></i> Grooming Services</h6>
-                            <div class="row g-2">
-                                @foreach (var groom in ViewBag.Groomings)
-                                {
-                                    <div class="col-md-6">
-                                        <div class="p-3 bg-light rounded-4 border border-dashed">
-                                            <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">@groom.GetProperty("name")</h6>
-                                            <small class="text-muted text-truncate d-block" style="font-size: 0.8rem;">@groom.GetProperty("description")</small>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-4 py-2 fw-bold mb-3" style="letter-spacing: 1px;">
+                    @Model.Breed.ToUpper()
+                </span>
+                <h1 class="fw-bold display-3 mb-2">@Model.Name</h1>
+                <div class="d-flex align-items-baseline gap-3">
+                    <h2 class="text-primary fw-bold display-6 mb-0">$@Model.Price</h2>
+                    <span class="text-muted small">Tax included</span>
                 </div>
             </div>
 
-            <div class="d-grid gap-3">
-                <a asp-controller="Transactions" asp-action="Checkout" asp-route-petId="@Model.PetId" class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm">
-                    Proceed to Adoption
+            <div class="row g-4 mb-5">
+                <div class="col-sm-6">
+                    <div class="p-4 bg-light rounded-4 d-flex align-items-center">
+                        <div class="bg-white p-3 rounded-3 shadow-sm me-3">
+                            <i class="fa-solid fa-calendar-check text-primary"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold d-block mb-0">Age</small>
+                            <span class="fw-bold h4 mb-0">@Model.Age Years</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="p-4 bg-light rounded-4 d-flex align-items-center">
+                        <div class="bg-white p-3 rounded-3 shadow-sm me-3">
+                            <i class="fa-solid fa-heart-pulse text-success"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold d-block mb-0">Status</small>
+                            <span class="fw-bold h4 mb-0 text-success">Healthy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5 pt-2">
+                <a asp-controller="Transactions" asp-action="Checkout" asp-route-petId="@Model.PetId" class="btn btn-primary rounded-pill py-3 px-5 fw-bold shadow-lg w-100" style="font-size: 1.2rem;">
+                    Adopt @Model.Name Now
                 </a>
-                <button class="btn btn-light rounded-pill py-3 fw-bold text-muted border-0 shadow-sm">
-                    <i class="fa-regular fa-heart me-2"></i>Add to Wishlist
-                </button>
+            </div>
+
+            <hr class="my-5 opacity-25">
+
+            <div class="row g-5">
+                @if (ViewBag.Foods != null && ((IEnumerable<System.Text.Json.JsonElement>)ViewBag.Foods).Any())
+                {
+                    <div class="col-12">
+                        <h6 class="fw-bold text-uppercase small text-muted mb-4 d-flex align-items-center">
+                            <i class="fa-solid fa-utensils me-2 text-primary"></i> Dietary Requirements
+                        </h6>
+                        <div class="row g-3">
+                            @foreach (var food in ViewBag.Foods)
+                            {
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white border border-2 rounded-4 shadow-sm h-100">
+                                        <div class="fw-bold text-dark mb-1">@food.GetProperty("name")</div>
+                                        <div class="small text-primary opacity-75">@food.GetProperty("brand") • @food.GetProperty("type")</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.Vaccinations != null && ((IEnumerable<System.Text.Json.JsonElement>)ViewBag.Vaccinations).Any())
+                {
+                    <div class="col-12">
+                        <h6 class="fw-bold text-uppercase small text-muted mb-4 d-flex align-items-center">
+                            <i class="fa-solid fa-syringe me-2 text-primary"></i> Vaccinations
+                        </h6>
+                        <div class="row g-3">
+                            @foreach (var vac in ViewBag.Vaccinations)
+                            {
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white border border-2 rounded-4 shadow-sm h-100">
+                                        <div class="fw-bold text-dark mb-1">@vac.GetProperty("name")</div>
+                                        <div class="small text-muted">@vac.GetProperty("description")</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (ViewBag.Groomings != null && ((IEnumerable<System.Text.Json.JsonElement>)ViewBag.Groomings).Any())
+                {
+                    <div class="col-12">
+                        <h6 class="fw-bold text-uppercase small text-muted mb-4 d-flex align-items-center">
+                            <i class="fa-solid fa-scissors me-2 text-primary"></i> Grooming Packages
+                        </h6>
+                        <div class="row g-3">
+                            @foreach (var groom in ViewBag.Groomings)
+                            {
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white border border-2 rounded-4 shadow-sm h-100">
+                                        <div class="fw-bold text-dark mb-1">@groom.GetProperty("name")</div>
+                                        <div class="small text-muted">@groom.GetProperty("description")</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -136,5 +150,8 @@
 @section Scripts {
     <style>
         .leading-relaxed { line-height: 1.8; }
+        .display-3 { font-weight: 800; letter-spacing: -1px; }
+        .bg-light { background-color: #f8fafc !important; }
+        .border-dashed { border-style: dashed !important; }
     </style>
 }

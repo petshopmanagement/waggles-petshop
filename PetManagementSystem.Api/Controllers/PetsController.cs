@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
@@ -16,13 +17,23 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<PetDto>>> GetAllPets([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var pets = await _service.GetAllPets(page, pageSize);
             return Ok(pets);
         }
 
+        [HttpGet("count")]
+        [AllowAnonymous]
+        public async Task<ActionResult<int>> GetTotalPetsCount()
+        {
+            var count = await _service.GetTotalPetCount();
+            return Ok(count);
+        }
+
         [HttpGet("{petid}")]
+        [AllowAnonymous]
         public async Task<ActionResult<PetDto>> GetPet(int petid)
         {
             var pet = await _service.GetPetById(petid);
@@ -30,6 +41,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("category/{categoryId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByCategory(int categoryId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var pets = await _service.GetPetByCategory(categoryId, page, pageSize);
@@ -37,6 +49,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("name/{name}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByName(string name, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var pets = await _service.GetPetByName(name, page, pageSize);
@@ -44,6 +57,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Supplier,Admin")]
         public async Task<ActionResult<PetDto>> PostPet([FromBody] PetCreate dto)
         {
             var createdPet = await _service.AddPet(dto);
@@ -56,6 +70,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpPut("{petid}")]
+        [Authorize(Roles = "Supplier,Admin")]
         public async Task<IActionResult> PutPet(int petid, [FromBody] PetUpdate dto)
         {
             await _service.UpdatePet(petid, dto);
@@ -63,6 +78,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("{petId}/suppliers")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<IEnumerable<SupplierDTO>>> GetSupplierPetById(int petId)
         {
             var suppliers = await _service.GetSuppliersByPetIdService(petId);
@@ -70,6 +86,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("{petId}/employees")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetEmployeeByPetId(int petId)
         {
             var employees = await _service.GetEmployeeByPetIdService(petId);
@@ -77,6 +94,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("transactions/{petId}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<IEnumerable<TransactionDto>>> GetTransactionsByPetId(int petId)
         {
             var result = await _service.GetTrasactionbypetID(petId);
@@ -84,6 +102,7 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("groomings/{petId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<GroomingDTO>>> GetGroomingsByPetId(int petId)
         {
             var result = await _service.GetGroomingsByPetId(petId);
@@ -91,10 +110,12 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("vaccinations/{petId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<VaccinationDto>>> GetVaccinationByPetId(int petId)
         {
             var result = await _service.GetVaccinationByPetId(petId);
             return Ok(result);
         }
+
     }
 }

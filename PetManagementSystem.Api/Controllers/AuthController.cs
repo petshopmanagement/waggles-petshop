@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
@@ -40,6 +41,7 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("change-password")]
+    
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         if (!ModelState.IsValid)

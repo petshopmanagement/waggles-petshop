@@ -21,7 +21,8 @@ namespace PetManagementSystem.Web.Controllers
         {
             var employees = await _api.GetAsync<IEnumerable<EmployeeViewModel>>("employees");
             var customers = await _api.GetAsync<IEnumerable<CustomerViewModel>>("customers");
-            var pets = await _api.GetAsync<IEnumerable<PetViewModel>>("pets");
+            var petCount = await _api.GetAsync<int>("pets/count");
+            var food = await _api.GetAsync<IEnumerable<PetFoodViewModel>>("PetFood");
 
             var suppliersResp = await _api.GetAsync<JsonElement?>("Supplier");
             int supplierCount = 0;
@@ -35,9 +36,10 @@ namespace PetManagementSystem.Web.Controllers
             ViewBag.EmployeeCount = employees?.Count() ?? 0;
             ViewBag.CustomerCount = customers?.Count() ?? 0;
             ViewBag.SupplierCount = supplierCount;
-            ViewBag.PetCount = pets?.Count() ?? 0;
+            ViewBag.PetCount = petCount;
+            ViewBag.FoodCount = food?.Count() ?? 0;
 
-            // Recent transactions for the dashboard table (last 5)
+
             var transactions = await _api.GetAsync<IEnumerable<dynamic>>("transactions");
             return View(transactions?.Take(5).ToList() ?? new List<dynamic>());
         }
@@ -70,6 +72,93 @@ namespace PetManagementSystem.Web.Controllers
             }
 
             return View(suppliers);
+        }
+
+        public async Task<IActionResult> Services()
+        {
+
+            var groomingResp = await _api.GetAsync<JsonElement?>("GroomingServices");
+            var groomingServices = new List<GroomingServiceViewModel>();
+            if (groomingResp.HasValue && groomingResp.Value.TryGetProperty("data", out var gData) && gData.ValueKind == JsonValueKind.Array)
+            {
+                groomingServices = JsonSerializer.Deserialize<List<GroomingServiceViewModel>>(gData.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<GroomingServiceViewModel>();
+            }
+
+
+            var vaccinations = await _api.GetAsync<IEnumerable<VaccinationViewModel>>("Vaccinations") ?? new List<VaccinationViewModel>();
+
+            var model = new AdminServicesViewModel
+            {
+                GroomingServices = groomingServices,
+                Vaccinations = vaccinations
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateGrooming(GroomingServiceViewModel model)
+        {
+            if (!ModelState.IsValid) return RedirectToAction("Services");
+
+            var payload = new
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                Available = model.IsAvailable ? 1 : 0
+            };
+
+            await _api.PostAsync<object, dynamic>("GroomingServices", payload);
+            TempData["SuccessMessage"] = "Grooming service created successfully!";
+            return RedirectToAction("Services");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateVaccination(VaccinationViewModel model)
+        {
+            if (!ModelState.IsValid) return RedirectToAction("Services");
+
+            var payload = new
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                Available = model.IsAvailable
+            };
+
+            await _api.PostAsync<object, dynamic>("Vaccinations", payload);
+            TempData["SuccessMessage"] = "Vaccination added successfully!";
+            return RedirectToAction("Services");
+        }
+
+        public async Task<IActionResult> PetFood()
+        {
+            var food = await _api.GetAsync<IEnumerable<PetFoodViewModel>>("PetFood");
+            return View(food ?? Enumerable.Empty<PetFoodViewModel>());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreatePetFood(PetFoodViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var food = await _api.GetAsync<IEnumerable<PetFoodViewModel>>("PetFood");
+                return View("PetFood", food ?? Enumerable.Empty<PetFoodViewModel>());
+            }
+
+            var payload = new
+            {
+                Name = model.Name,
+                Brand = model.Brand,
+                Type = model.Type,
+                Quantity = model.Quantity,
+                Price = model.Price
+            };
+
+            await _api.PostAsync<object, dynamic>("PetFood", payload);
+            TempData["SuccessMessage"] = "Pet food added successfully!";
+            return RedirectToAction("PetFood");
         }
     }
 }

@@ -22,6 +22,11 @@ namespace PetManagementSystem.Api.Repositories
                 .ToListAsync();
         }
 
+        public async Task<int> GetTotalPetCount()
+        {
+            return await _context.Pets.CountAsync();
+        }
+
         public async Task<IEnumerable<Pet>> GetPetByCategory(int categoryId, int page = 1, int pageSize = 10)
         {
             return await _context.Pets
@@ -112,5 +117,6 @@ namespace PetManagementSystem.Api.Repositories
 
             return pet.Vaccinations;
         }
+
     }
 }

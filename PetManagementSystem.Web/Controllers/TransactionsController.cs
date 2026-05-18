@@ -18,12 +18,14 @@ namespace PetManagementSystem.Web.Controllers
         }
 
         // Admin view of all transactions
-        public async Task<IActionResult> Index(string search, string status)
+        public async Task<IActionResult> Index(string search, string status, int page = 1)
         {
-            string endpoint = "transactions";
+            ViewBag.CurrentPage = page;
+            int pageSize = 10;
+            string endpoint = $"transactions?page={page}&pageSize={pageSize}";
             if (!string.IsNullOrEmpty(search) || (!string.IsNullOrEmpty(status) && status != "All"))
             {
-                endpoint = $"transactions/search?query={search}&status={status}";
+                endpoint = $"transactions/search?query={search}&status={status}&page={page}&pageSize={pageSize}";
             }
 
             var response = await _api.GetAsync<JsonElement?>(endpoint);

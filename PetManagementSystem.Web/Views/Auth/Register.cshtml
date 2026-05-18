@@ -14,7 +14,7 @@
             <form asp-action="Register" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-                <!-- Role Selection -->
+
                 <div class="mb-5">
                     <label asp-for="Role" class="form-label fw-bold small text-uppercase text-primary">I am registering as a...</label>
                     <select asp-for="Role" id="roleSelect" class="form-select border-primary border-opacity-25 py-3 rounded-4 shadow-sm">
@@ -24,7 +24,7 @@
                     </select>
                 </div>
 
-                <!-- Fields for Customers & Employees -->
+
                 <div id="personalFields">
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -38,7 +38,7 @@
                     </div>
                 </div>
 
-                <!-- Fields for Employees Only -->
+
                 <div id="employeeFields" style="display:none;">
                     <div class="mb-4">
                         <label asp-for="Position" class="form-label fw-bold small text-uppercase">Position / Designation</label>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                <!-- Fields for Suppliers Only -->
+
                 <div id="supplierFields" style="display:none;">
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
@@ -60,11 +60,18 @@
                     </div>
                 </div>
 
-                <!-- Common Credentials -->
-                <div class="mb-4">
-                    <label asp-for="Email" class="form-label fw-bold small text-uppercase">Email Address</label>
-                    <input asp-for="Email" class="form-control bg-light border-0 py-2" placeholder="name@example.com" />
-                    <span asp-validation-for="Email" class="text-danger small"></span>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-bold small text-uppercase">Email Address</label>
+                        <input asp-for="Email" class="form-control bg-light border-0 py-2" placeholder="name@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label fw-bold small text-uppercase">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control bg-light border-0 py-2" placeholder="+1 (555) 000-0000" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
                 </div>
 
                 <div class="row mb-4">

@@ -30,6 +30,11 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
 
+        public async Task<int> GetTotalPetCount()
+        {
+            return await _repository.GetTotalPetCount();
+        }
+
         public async Task<PetDto?> GetPetById(int petid)
         {
             if (petid <= 0)
@@ -208,5 +213,6 @@ namespace PetManagementSystem.Api.Services
 
             return _mapper.Map<IEnumerable<GroomingDTO>>(groomings);
         }
+
     }
 }

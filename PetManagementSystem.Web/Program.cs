@@ -18,13 +18,17 @@ namespace PetManagementSystem.Web
             builder.Services.AddTransient<BearerTokenHandler>();
 
             // 3. Configure HttpClient for ApiService
-            var apiBaseUrl = builder.Configuration.GetValue<string>("ApiBaseUrl") ?? "https://localhost:7196/api/";
+            var apiBaseUrl = builder.Configuration.GetValue<string>("ApiBaseUrl") ?? "https://localhost:7294/api/";
             builder.Services.AddHttpClient<IApiService, ApiService>(client =>
             {
                 client.BaseAddress = new Uri(apiBaseUrl);
             }).AddHttpMessageHandler<BearerTokenHandler>();
 
             var app = builder.Build();
+
+            
+
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -45,6 +49,8 @@ namespace PetManagementSystem.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
+            
         }
     }
 }

@@ -20,6 +20,7 @@ public class TransactionsController : ControllerBase
         => Ok(await _service.GetAllAsync(page, pageSize));
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,Employee,Customer")]
     public async Task<IActionResult> GetById(int id)
     {
         var t = await _service.GetByIdAsync(id);
@@ -27,10 +28,12 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpGet("customer/{custId}")]
+    [Authorize(Roles = "Admin,Employee,Customer")]
     public async Task<IActionResult> GetByCustomer(int custId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         => Ok(await _service.GetByCustomerAsync(custId, page, pageSize));
 
     [HttpGet("pet/{petId}")]
+    [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> GetByPet(int petId)
         => Ok(await _service.GetByPetAsync(petId));
 
@@ -45,7 +48,7 @@ public class TransactionsController : ControllerBase
         => Ok(await _service.GetSalesSummaryAsync());
 
     [HttpPost]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin,Customer")]
     public async Task<IActionResult> Create([FromBody] CreateTransactionDto dto)
     {
         var created = await _service.CreateAsync(dto);
