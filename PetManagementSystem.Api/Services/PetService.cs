@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Exceptions;
 using PetManagementSystem.Api.Models;
@@ -17,13 +17,14 @@ namespace PetManagementSystem.Api.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PetDto>> GetAllPets()
+        public async Task<IEnumerable<PetDto>> GetAllPets(int page = 1, int pageSize = 10)
         {
-            var pets = await _repository.GetAllPets();
+            var pets = await _repository.GetAllPets(page, pageSize);
 
             if (pets == null || !pets.Any())
             {
-                throw new NotFoundException("No pets found.");
+                // We shouldn't necessarily throw an exception for pagination if there are no more results
+                return new List<PetDto>();
             }
 
             return _mapper.Map<IEnumerable<PetDto>>(pets);
@@ -46,35 +47,35 @@ namespace PetManagementSystem.Api.Services
             return _mapper.Map<PetDto>(pet);
         }
 
-        public async Task<IEnumerable<PetDto>> GetPetByCategory(int categoryId)
+        public async Task<IEnumerable<PetDto>> GetPetByCategory(int categoryId, int page = 1, int pageSize = 10)
         {
             if (categoryId <= 0)
             {
                 throw new BadRequestException("Category Id must be greater than 0.");
             }
 
-            var pets = await _repository.GetPetByCategory(categoryId);
+            var pets = await _repository.GetPetByCategory(categoryId, page, pageSize);
 
             if (pets == null || !pets.Any())
             {
-                throw new NotFoundException("No pets found in this category.");
+                return new List<PetDto>();
             }
 
             return _mapper.Map<IEnumerable<PetDto>>(pets);
         }
 
-        public async Task<IEnumerable<PetDto>> GetPetByName(string name)
+        public async Task<IEnumerable<PetDto>> GetPetByName(string name, int page = 1, int pageSize = 10)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new BadRequestException("Pet name is required.");
             }
 
-            var pets = await _repository.GetPetByName(name);
+            var pets = await _repository.GetPetByName(name, page, pageSize);
 
             if (pets == null || !pets.Any())
             {
-                throw new NotFoundException("No pets found with this name.");
+                return new List<PetDto>();
             }
 
             return _mapper.Map<IEnumerable<PetDto>>(pets);

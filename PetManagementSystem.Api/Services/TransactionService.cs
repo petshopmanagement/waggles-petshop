@@ -18,8 +18,8 @@ public class TransactionService : ITransactionService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<TransactionDto>> GetAllAsync()
-        => _mapper.Map<IEnumerable<TransactionDto>>(await _repo.GetAllAsync());
+    public async Task<IEnumerable<TransactionDto>> GetAllAsync(int page = 1, int pageSize = 10)
+        => _mapper.Map<IEnumerable<TransactionDto>>(await _repo.GetAllAsync(page, pageSize));
 
     public async Task<TransactionDto> GetByIdAsync(int id)
     {
@@ -30,12 +30,12 @@ public class TransactionService : ITransactionService
         return _mapper.Map<TransactionDto>(t);
     }
 
-    public async Task<IEnumerable<TransactionDto>> GetByCustomerAsync(int customerId)
+    public async Task<IEnumerable<TransactionDto>> GetByCustomerAsync(int customerId, int page = 1, int pageSize = 10)
     {
         if (customerId <= 0)
             throw new ArgumentException("Customer ID must be a positive integer.", nameof(customerId));
 
-        return _mapper.Map<IEnumerable<TransactionDto>>(await _repo.GetByCustomerAsync(customerId));
+        return _mapper.Map<IEnumerable<TransactionDto>>(await _repo.GetByCustomerAsync(customerId, page, pageSize));
     }
 
     public async Task<IEnumerable<TransactionDto>> GetByPetAsync(int petId)
@@ -85,9 +85,9 @@ public class TransactionService : ITransactionService
         return _mapper.Map<TransactionDto>(updated);
     }
 
-    public async Task<IEnumerable<TransactionDto>> SearchAsync(string query, string? status)
+    public async Task<IEnumerable<TransactionDto>> SearchAsync(string query, string? status, int page = 1, int pageSize = 10)
     {
-        var results = await _repo.SearchAsync(query, status);
+        var results = await _repo.SearchAsync(query, status, page, pageSize);
         return _mapper.Map<IEnumerable<TransactionDto>>(results);
     }
 }

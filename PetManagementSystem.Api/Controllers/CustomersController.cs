@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Services;
+
 
 namespace PetManagementSystem.Api.Controllers;
 
@@ -28,6 +29,7 @@ public class CustomersController : ControllerBase
     {
         return Ok(await _service.GetProfileAsync(id));
     }
+    
 
     [HttpGet("{id}/transactions")]
     public async Task<IActionResult> GetTransactions(int id)

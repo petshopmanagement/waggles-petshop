@@ -13,16 +13,27 @@ public class TransactionRepository : ITransactionRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Transaction>> GetAllAsync()
-        => await _context.Transactions.Include(t => t.Customer).Include(t => t.Pet).ToListAsync();
+    public async Task<IEnumerable<Transaction>> GetAllAsync(int page = 1, int pageSize = 10)
+        => await _context.Transactions
+            .Include(t => t.Customer)
+            .Include(t => t.Pet)
+            .OrderByDescending(t => t.TransactionDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
     public async Task<Transaction?> GetByIdAsync(int id)
         => await _context.Transactions.Include(t => t.Customer).Include(t => t.Pet)
             .FirstOrDefaultAsync(t => t.TransactionId == id);
 
-    public async Task<IEnumerable<Transaction>> GetByCustomerAsync(int customerId)
-        => await _context.Transactions.Include(t => t.Pet)
-            .Where(t => t.CustomerId == customerId).ToListAsync();
+    public async Task<IEnumerable<Transaction>> GetByCustomerAsync(int customerId, int page = 1, int pageSize = 10)
+        => await _context.Transactions
+            .Include(t => t.Pet)
+            .Where(t => t.CustomerId == customerId)
+            .OrderByDescending(t => t.TransactionDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
     public async Task<IEnumerable<Transaction>> GetByPetAsync(int petId)
         => await _context.Transactions.Include(t => t.Customer)
@@ -49,7 +60,7 @@ public class TransactionRepository : ITransactionRepository
         return transaction;
     }
 
-    public async Task<IEnumerable<Transaction>> SearchAsync(string query, string? status)
+    public async Task<IEnumerable<Transaction>> SearchAsync(string query, string? status, int page = 1, int pageSize = 10)
     {
         var transactions = _context.Transactions
             .Include(t => t.Customer)
@@ -70,6 +81,10 @@ public class TransactionRepository : ITransactionRepository
             transactions = transactions.Where(t => t.TransactionStatus == status);
         }
 
-        return await transactions.ToListAsync();
+        return await transactions
+            .OrderByDescending(t => t.TransactionDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 }

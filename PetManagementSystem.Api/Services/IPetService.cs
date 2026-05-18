@@ -1,17 +1,17 @@
-﻿using PetManagementSystem.Api.DTOs;
+using PetManagementSystem.Api.DTOs;
 using PetManagementSystem.Api.Models;
 
 namespace PetManagementSystem.Api.Services
 {
     public interface IPetService
     {
-        Task<IEnumerable<PetDto>> GetAllPets();
+        Task<IEnumerable<PetDto>> GetAllPets(int page = 1, int pageSize = 10);
 
         Task<PetDto?> GetPetById(int petid);
 
-        Task<IEnumerable<PetDto>> GetPetByCategory(int categoryId);
+        Task<IEnumerable<PetDto>> GetPetByCategory(int categoryId, int page = 1, int pageSize = 10);
 
-        Task<IEnumerable<PetDto>> GetPetByName(string name);
+        Task<IEnumerable<PetDto>> GetPetByName(string name, int page = 1, int pageSize = 10);
 
         Task<PetDto> AddPet(PetCreate dto);
 

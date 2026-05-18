@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PetManagementSystem.Api.Data;
 using PetManagementSystem.Api.Models;
 
@@ -14,15 +14,20 @@ namespace PetManagementSystem.Api.Repositories
         }
 
 
-        public async Task<IEnumerable<Pet>> GetAllPets()
+        public async Task<IEnumerable<Pet>> GetAllPets(int page = 1, int pageSize = 10)
         {
-            return await _context.Pets.ToListAsync();
+            return await _context.Pets
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Pet>> GetPetByCategory(int categoryId)
+        public async Task<IEnumerable<Pet>> GetPetByCategory(int categoryId, int page = 1, int pageSize = 10)
         {
             return await _context.Pets
                 .Where(p => p.CategoryId == categoryId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
@@ -31,10 +36,12 @@ namespace PetManagementSystem.Api.Repositories
             return await _context.Pets.FindAsync(petid);
         }
 
-        public async Task<IEnumerable<Pet>> GetPetByName(string name)
+        public async Task<IEnumerable<Pet>> GetPetByName(string name, int page = 1, int pageSize = 10)
         {
             return await _context.Pets
                 .Where(p => p.Name.Contains(name))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 

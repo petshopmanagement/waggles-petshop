@@ -16,8 +16,8 @@ public class TransactionsController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll()
-        => Ok(await _service.GetAllAsync());
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        => Ok(await _service.GetAllAsync(page, pageSize));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
@@ -27,8 +27,8 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpGet("customer/{custId}")]
-    public async Task<IActionResult> GetByCustomer(int custId)
-        => Ok(await _service.GetByCustomerAsync(custId));
+    public async Task<IActionResult> GetByCustomer(int custId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        => Ok(await _service.GetByCustomerAsync(custId, page, pageSize));
 
     [HttpGet("pet/{petId}")]
     public async Task<IActionResult> GetByPet(int petId)
@@ -62,9 +62,9 @@ public class TransactionsController : ControllerBase
 
     [HttpGet("search")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] string? status)
+    public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var results = await _service.SearchAsync(query, status);
+        var results = await _service.SearchAsync(query, status, page, pageSize);
         return Ok(results);
     }
 }

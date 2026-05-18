@@ -1,17 +1,17 @@
-﻿using PetManagementSystem.Api.Models;
+using PetManagementSystem.Api.Models;
 
 namespace PetManagementSystem.Api.Repositories
 {
     public interface IPetRepository
     {
 
-        Task<IEnumerable<Pet>> GetAllPets();
+        Task<IEnumerable<Pet>> GetAllPets(int page = 1, int pageSize = 10);
 
         Task<Pet?> GetPetById(int petid);
 
-        Task<IEnumerable<Pet>> GetPetByCategory(int categoryId);
+        Task<IEnumerable<Pet>> GetPetByCategory(int categoryId, int page = 1, int pageSize = 10);
 
-        Task<IEnumerable<Pet>> GetPetByName(string name);
+        Task<IEnumerable<Pet>> GetPetByName(string name, int page = 1, int pageSize = 10);
 
         Task AddPet(Pet pet);
 

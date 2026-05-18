@@ -16,9 +16,9 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PetDto>>> GetAllPets()
+        public async Task<ActionResult<IEnumerable<PetDto>>> GetAllPets([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var pets = await _service.GetAllPets();
+            var pets = await _service.GetAllPets(page, pageSize);
             return Ok(pets);
         }
 
@@ -30,16 +30,16 @@ namespace PetManagementSystem.Api.Controllers
         }
 
         [HttpGet("category/{categoryId}")]
-        public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByCategory(int categoryId)
+        public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByCategory(int categoryId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var pets = await _service.GetPetByCategory(categoryId);
+            var pets = await _service.GetPetByCategory(categoryId, page, pageSize);
             return Ok(pets);
         }
 
         [HttpGet("name/{name}")]
-        public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByName(string name)
+        public async Task<ActionResult<IEnumerable<PetDto>>> GetPetByName(string name, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var pets = await _service.GetPetByName(name);
+            var pets = await _service.GetPetByName(name, page, pageSize);
             return Ok(pets);
         }
 
