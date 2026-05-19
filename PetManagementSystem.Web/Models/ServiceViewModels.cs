@@ -12,7 +12,7 @@ namespace PetManagementSystem.Web.Models
         public string? Description { get; set; }
 
         [Required]
-        [Range(0, 10000)]
+        [Range(0.01, 100000, ErrorMessage = "Price must be greater than 0.")]
         public decimal Price { get; set; }
 
         public bool IsAvailable { get; set; } = true;
@@ -28,7 +28,7 @@ namespace PetManagementSystem.Web.Models
         public string? Description { get; set; }
 
         [Required]
-        [Range(0, 10000)]
+        [Range(0.01, 100000, ErrorMessage = "Price must be greater than 0.")]
         public decimal Price { get; set; }
 
         public bool IsAvailable { get; set; } = true;

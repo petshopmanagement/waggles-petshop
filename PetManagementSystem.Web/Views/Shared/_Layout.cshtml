@@ -61,6 +61,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Pets" ? "active" : "")"
+                               asp-controller="Admin" asp-action="Pets">
+                            <i class="fa-solid fa-dog"></i>
+                            <span>Pets</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["action"]?.ToString() == "Employees" ? "active" : "")"
                                asp-controller="Admin" asp-action="Employees">
                             <i class="fa-solid fa-user-tie"></i>

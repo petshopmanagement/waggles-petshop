@@ -30,10 +30,12 @@
                         <div class="col-md-6">
                             <label asp-for="FirstName" class="form-label fw-bold small text-uppercase">First Name</label>
                             <input asp-for="FirstName" class="form-control bg-light border-0 py-2" placeholder="John" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6">
                             <label asp-for="LastName" class="form-label fw-bold small text-uppercase">Last Name</label>
                             <input asp-for="LastName" class="form-control bg-light border-0 py-2" placeholder="Doe" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
                         </div>
                     </div>
                 </div>
@@ -43,6 +45,7 @@
                     <div class="mb-4">
                         <label asp-for="Position" class="form-label fw-bold small text-uppercase">Position / Designation</label>
                         <input asp-for="Position" class="form-control bg-light border-0 py-2" placeholder="e.g. Groomer, Manager, Sales" />
+                        <span asp-validation-for="Position" class="text-danger small"></span>
                     </div>
                 </div>
 
@@ -52,10 +55,12 @@
                         <div class="col-md-6">
                             <label asp-for="Name" class="form-label fw-bold small text-uppercase">Company Name</label>
                             <input asp-for="Name" class="form-control bg-light border-0 py-2" placeholder="e.g. Happy Paws Inc" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6">
                             <label asp-for="ContactPerson" class="form-label fw-bold small text-uppercase">Contact Person</label>
                             <input asp-for="ContactPerson" class="form-control bg-light border-0 py-2" placeholder="e.g. John Doe" />
+                            <span asp-validation-for="ContactPerson" class="text-danger small"></span>
                         </div>
                     </div>
                 </div>
@@ -93,20 +98,24 @@
                 <div class="mb-4">
                     <label asp-for="Street" class="form-label fw-bold small text-uppercase">Street</label>
                     <input asp-for="Street" class="form-control bg-light border-0 py-2" placeholder="123 Pet Lane" />
+                    <span asp-validation-for="Street" class="text-danger small"></span>
                 </div>
 
                 <div class="row mb-5">
                     <div class="col-md-4">
                         <label asp-for="City" class="form-label fw-bold small text-uppercase">City</label>
                         <input asp-for="City" class="form-control bg-light border-0 py-2" placeholder="New York" />
+                        <span asp-validation-for="City" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="State" class="form-label fw-bold small text-uppercase">State</label>
                         <input asp-for="State" class="form-control bg-light border-0 py-2" placeholder="NY" />
+                        <span asp-validation-for="State" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="ZipCode" class="form-label fw-bold small text-uppercase">Zip Code</label>
                         <input asp-for="ZipCode" class="form-control bg-light border-0 py-2" placeholder="10001" />
+                        <span asp-validation-for="ZipCode" class="text-danger small"></span>
                     </div>
                 </div>
 
@@ -125,6 +134,29 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        function updateValidationRules(role) {
+            // First clear all custom required messages
+            $('#FirstName, #LastName, #Position, #Name').removeAttr('data-val-required');
+            
+            if (role === 'Supplier') {
+                $('#Name').attr('data-val-required', 'Company Name is required.');
+            } else if (role === 'Employee') {
+                $('#FirstName').attr('data-val-required', 'First Name is required.');
+                $('#LastName').attr('data-val-required', 'Last Name is required.');
+                $('#Position').attr('data-val-required', 'Position is required for Employee.');
+            } else {
+                $('#FirstName').attr('data-val-required', 'First Name is required.');
+                $('#LastName').attr('data-val-required', 'Last Name is required.');
+            }
+
+            // re-parse the unobtrusive validation
+            var $form = $("form");
+            if ($form.data("unobtrusiveValidation")) {
+                $form.removeData("validator").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($form);
+            }
+        }
+
         document.getElementById('roleSelect').addEventListener('change', function() {
             var personalFields = document.getElementById('personalFields');
             var employeeFields = document.getElementById('employeeFields');
@@ -143,6 +175,13 @@
                 employeeFields.style.display = 'none';
                 supplierFields.style.display = 'none';
             }
+            
+            updateValidationRules(this.value);
+        });
+
+        // Run once on load
+        $(document).ready(function() {
+            updateValidationRules(document.getElementById('roleSelect').value);
         });
     </script>
 }

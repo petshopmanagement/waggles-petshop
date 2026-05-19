@@ -36,11 +36,24 @@ namespace PetManagementSystem.Web.Models
         public string Role { get; set; } = "Customer";
 
         // Profile fields (role-conditional — NOT [Required] here; API FluentValidation enforces per-role)
+        [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "First Name can contain only alphabets.")]
+        [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters.")]
         public string? FirstName { get; set; }
+
+        [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "Last Name can contain only alphabets.")]
+        [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters.")]
         public string? LastName { get; set; }
+
+        [StringLength(100, ErrorMessage = "Company Name cannot exceed 100 characters.")]
         public string? Name { get; set; }
+
+        [StringLength(50, ErrorMessage = "Contact Person cannot exceed 50 characters.")]
         public string? ContactPerson { get; set; }
+
+        [StringLength(50, ErrorMessage = "Position cannot exceed 50 characters.")]
         public string? Position { get; set; }
+
+        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Phone Number must contain exactly 10 digits.")]
         public string? PhoneNumber { get; set; }
 
         // Address fields

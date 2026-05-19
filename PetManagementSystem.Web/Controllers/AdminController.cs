@@ -41,7 +41,24 @@ namespace PetManagementSystem.Web.Controllers
 
 
             var transactions = await _api.GetAsync<IEnumerable<dynamic>>("transactions");
+            
+            var pets = await _api.GetAsync<IEnumerable<PetViewModel>>("pets");
+            ViewBag.ActivePets = pets?.Take(5).ToList() ?? new List<PetViewModel>();
+
             return View(transactions?.Take(5).ToList() ?? new List<dynamic>());
+        }
+
+        public async Task<IActionResult> Pets(int page = 1)
+        {
+            int pageSize = 10;
+            var pets = await _api.GetAsync<IEnumerable<PetViewModel>>($"pets?page={page}&pageSize={pageSize}");
+            var totalPets = await _api.GetAsync<int>("pets/count");
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalPets / (double)pageSize);
+            ViewBag.TotalPets = totalPets;
+
+            return View(pets ?? Enumerable.Empty<PetViewModel>());
         }
 
         public async Task<IActionResult> Employees()
@@ -99,7 +116,7 @@ namespace PetManagementSystem.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateGrooming(GroomingServiceViewModel model)
         {
-            if (!ModelState.IsValid) return RedirectToAction("Services");
+            if (!ModelState.IsValid) return await Services();
 
             var payload = new
             {
@@ -109,7 +126,12 @@ namespace PetManagementSystem.Web.Controllers
                 Available = model.IsAvailable ? 1 : 0
             };
 
-            await _api.PostAsync<object, dynamic>("GroomingServices", payload);
+            var response = await _api.PostAsync<object, JsonElement?>("GroomingServices", payload);
+            if (HandleApiErrors(response))
+            {
+                return await Services();
+            }
+
             TempData["SuccessMessage"] = "Grooming service created successfully!";
             return RedirectToAction("Services");
         }
@@ -117,7 +139,7 @@ namespace PetManagementSystem.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateVaccination(VaccinationViewModel model)
         {
-            if (!ModelState.IsValid) return RedirectToAction("Services");
+            if (!ModelState.IsValid) return await Services();
 
             var payload = new
             {
@@ -127,7 +149,12 @@ namespace PetManagementSystem.Web.Controllers
                 Available = model.IsAvailable
             };
 
-            await _api.PostAsync<object, dynamic>("Vaccinations", payload);
+            var response = await _api.PostAsync<object, JsonElement?>("Vaccinations", payload);
+            if (HandleApiErrors(response))
+            {
+                return await Services();
+            }
+
             TempData["SuccessMessage"] = "Vaccination added successfully!";
             return RedirectToAction("Services");
         }
@@ -156,9 +183,56 @@ namespace PetManagementSystem.Web.Controllers
                 Price = model.Price
             };
 
-            await _api.PostAsync<object, dynamic>("PetFood", payload);
+            var response = await _api.PostAsync<object, JsonElement?>("PetFood", payload);
+            if (HandleApiErrors(response))
+            {
+                var food = await _api.GetAsync<IEnumerable<PetFoodViewModel>>("PetFood");
+                return View("PetFood", food ?? Enumerable.Empty<PetFoodViewModel>());
+            }
+
             TempData["SuccessMessage"] = "Pet food added successfully!";
             return RedirectToAction("PetFood");
+        }
+        private bool HandleApiErrors(JsonElement? response)
+        {
+            if (response == null)
+            {
+                ModelState.AddModelError(string.Empty, "The server is currently unavailable.");
+                return true;
+            }
+
+            if (response.Value.ValueKind == JsonValueKind.Object && response.Value.TryGetProperty("errors", out var apiErrors))
+            {
+                if (apiErrors.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var error in apiErrors.EnumerateArray())
+                    {
+                        ModelState.AddModelError(string.Empty, error.GetString() ?? "Validation error.");
+                    }
+                }
+                else if (apiErrors.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (var errorField in apiErrors.EnumerateObject())
+                    {
+                        foreach (var errorMessage in errorField.Value.EnumerateArray())
+                        {
+                            ModelState.AddModelError(string.Empty, $"{errorField.Name}: {errorMessage.GetString()}");
+                        }
+                    }
+                }
+                return true;
+            }
+
+            if (response.Value.ValueKind == JsonValueKind.Object && response.Value.TryGetProperty("status", out var status) && status.GetInt32() >= 400)
+            {
+                if (response.Value.TryGetProperty("title", out var title))
+                {
+                    ModelState.AddModelError(string.Empty, title.GetString() ?? "An error occurred.");
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

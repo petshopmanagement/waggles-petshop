@@ -21,22 +21,40 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        var response = await _authService.LoginAsync(request);
-        return Ok(ApiResponse<AuthResponse>.SuccessResponse(response));
+            var response = await _authService.LoginAsync(request);
+            return Ok(ApiResponse<AuthResponse>.SuccessResponse(response));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ApiResponse<AuthResponse>.FailureResponse(ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<AuthResponse>.FailureResponse(ex.Message));
+        }
     }
 
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        var message = await _authService.RegisterAsync(request);
-        return Ok(ApiResponse<string>.SuccessResponse(message));
+            var message = await _authService.RegisterAsync(request);
+            return Ok(ApiResponse<string>.SuccessResponse(message));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<string>.FailureResponse(ex.Message));
+        }
     }
 
 
@@ -44,10 +62,17 @@ public class AuthController : ControllerBase
     
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        await _authService.ChangePasswordAsync(request);
-        return Ok(ApiResponse<string>.SuccessResponse("Password changed successfully."));
+            await _authService.ChangePasswordAsync(request);
+            return Ok(ApiResponse<string>.SuccessResponse("Password changed successfully."));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<string>.FailureResponse(ex.Message));
+        }
     }
 }

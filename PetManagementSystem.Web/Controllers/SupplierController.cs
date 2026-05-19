@@ -145,11 +145,22 @@ namespace PetManagementSystem.Web.Controllers
                 {
                     isSuccess = s2.ValueKind == JsonValueKind.True;
                 }
+                else if (result.Value.TryGetProperty("errors", out var err) || (result.Value.TryGetProperty("status", out var st) && st.GetInt32() >= 400))
+                {
+                    isSuccess = false;
+                }
+                else
+                {
+                    isSuccess = true;
+                }
             }
 
             if (!isSuccess)
             {
-                TempData["ErrorMessage"] = "Failed to add pet to inventory.";
+                if (!HandleApiErrors(result))
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to add pet to inventory.");
+                }
                 var catResponse = await _api.GetAsync<JsonElement?>("Categories");
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 if (catResponse != null)
@@ -165,6 +176,43 @@ namespace PetManagementSystem.Web.Controllers
 
             TempData["SuccessMessage"] = "Pet successfully added to Waggles inventory!";
             return RedirectToAction("Dashboard");
+        }
+        private bool HandleApiErrors(JsonElement? response)
+        {
+            if (response == null) return false;
+
+            if (response.Value.ValueKind == JsonValueKind.Object && response.Value.TryGetProperty("errors", out var apiErrors))
+            {
+                if (apiErrors.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var error in apiErrors.EnumerateArray())
+                    {
+                        ModelState.AddModelError(string.Empty, error.GetString() ?? "Validation error.");
+                    }
+                }
+                else if (apiErrors.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (var errorField in apiErrors.EnumerateObject())
+                    {
+                        foreach (var errorMessage in errorField.Value.EnumerateArray())
+                        {
+                            ModelState.AddModelError(string.Empty, $"{errorField.Name}: {errorMessage.GetString()}");
+                        }
+                    }
+                }
+                return true;
+            }
+
+            if (response.Value.ValueKind == JsonValueKind.Object && response.Value.TryGetProperty("status", out var status) && status.GetInt32() >= 400)
+            {
+                if (response.Value.TryGetProperty("title", out var title))
+                {
+                    ModelState.AddModelError(string.Empty, title.GetString() ?? "An error occurred.");
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

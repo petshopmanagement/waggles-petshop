@@ -29,42 +29,77 @@ namespace PetManagementSystem.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllEmployees()
         {
-            var emps = await _employeeService.GetAllEmployeesAsync();
-            return Ok(emps);
+            try
+            {
+                var emps = await _employeeService.GetAllEmployeesAsync();
+                return Ok(emps);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> GetByEmpId(int id)
         {
-            var emp = await _employeeService.GetEmpByIdAsync(id);
-            if (emp == null)
-                return NotFound();
-            return Ok(emp);
+            try
+            {
+                var emp = await _employeeService.GetEmpByIdAsync(id);
+                if (emp == null)
+                    return NotFound();
+                return Ok(emp);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateEmployee(WriteEmployeeDto dto)
         {
-            var created = await _employeeService.CreateEmployeeAsync(dto);
-            return CreatedAtAction(nameof(GetByEmpId), new { id = created.EmployeeId }, created);
+            try
+            {
+                var created = await _employeeService.CreateEmployeeAsync(dto);
+                return CreatedAtAction(nameof(GetByEmpId), new { id = created.EmployeeId }, created);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateEmployee(int id, WriteEmployeeDto dto)
         {
-            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, dto);
-            return Ok(updatedEmployee);
+            try
+            {
+                var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, dto);
+                return Ok(updatedEmployee);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PatchEmployee(int id, WriteEmployeeDto dto)
         {
-            var updatedEmployee = await _employeeService.PatchEmployeeAsync(id, dto);
-            return Ok(updatedEmployee);
+            try
+            {
+                var updatedEmployee = await _employeeService.PatchEmployeeAsync(id, dto);
+                return Ok(updatedEmployee);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
 
@@ -72,24 +107,37 @@ namespace PetManagementSystem.Api.Controllers
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> GetPets(int id)
         {
-            var pets = await _employeeService.GetPetsByEmpIdAsync(id);
-            return Ok(pets);
+            try
+            {
+                var pets = await _employeeService.GetPetsByEmpIdAsync(id);
+                return Ok(pets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
     
         [HttpGet("profile/me")]
         public async Task<IActionResult> GetProfile()
         {
-            
-            var empIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (empIdClaim == null || !int.TryParse(empIdClaim, out int empId))
-                return Unauthorized(new { message = "Invalid or missing token." });
+            try
+            {
+                var empIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (empIdClaim == null || !int.TryParse(empIdClaim, out int empId))
+                    return Unauthorized(new { message = "Invalid or missing token." });
 
-            var emp = await _employeeService.GetEmpByIdAsync(empId);
-            if (emp == null)
-                return NotFound(new { message = "Employee profile not found." });
+                var emp = await _employeeService.GetEmpByIdAsync(empId);
+                if (emp == null)
+                    return NotFound(new { message = "Employee profile not found." });
 
-            return Ok(emp);
+                return Ok(emp);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
     }

@@ -1,0 +1,116 @@
+@model IEnumerable<PetManagementSystem.Web.Models.PetViewModel>
+@{
+    ViewData["Title"] = "All Pets";
+}
+
+<div class="row mb-5">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">Pets</h2>
+        <p class="text-muted">All active pets currently available in the database.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <span class="badge bg-info rounded-pill px-4 py-2 fs-6">
+            @ViewBag.TotalPets Total
+        </span>
+    </div>
+</div>
+
+<div class="card custom-card border-0 shadow-sm p-0 overflow-hidden">
+    <div class="p-4 border-bottom bg-white">
+        <h5 class="fw-bold mb-0">
+            <i class="fa-solid fa-dog me-2 text-info"></i>
+            Pet Directory
+        </h5>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr class="small text-uppercase text-muted fw-bold">
+                    <th class="ps-4">Pet ID</th>
+                    <th>Name</th>
+                    <th>Breed</th>
+                    <th>Age</th>
+                    <th>Price</th>
+                    <th class="pe-4">Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var pet in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-muted small">@pet.PetId</td>
+
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center overflow-hidden"
+                                         style="width: 40px; height: 40px; flex-shrink: 0;">
+                                        <i class="fa-solid fa-dog text-muted"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">@pet.Name</h6>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="small">
+                                @(pet.Breed ?? "—")
+                            </td>
+
+                            <td class="small">
+                                @(pet.Age.HasValue ? $"{pet.Age}" : "—")
+                            </td>
+
+                            <td class="fw-bold">
+                                $@(pet.Price?.ToString("0.00") ?? "0.00")
+                            </td>
+
+                            <td class="pe-4 small text-truncate" style="max-width: 250px;" title="@pet.Description">
+                                @(pet.Description ?? "—")
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-dog fa-2x mb-3 d-block opacity-30"></i>
+                            No pets found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (ViewBag.TotalPages != null && ViewBag.TotalPages > 1)
+    {
+        <div class="p-4 border-top bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">
+                    Showing page @ViewBag.CurrentPage of @ViewBag.TotalPages
+                </span>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                            <a class="page-link text-info fw-bold" asp-action="Pets" asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                        </li>
+                        @for (int j = 1; j <= ViewBag.TotalPages; j++)
+                        {
+                            <li class="page-item @(j == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link @(j == ViewBag.CurrentPage ? "bg-info border-info" : "text-info") fw-bold" asp-action="Pets" asp-route-page="@j">@j</a>
+                            </li>
+                        }
+                        <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link text-info fw-bold" asp-action="Pets" asp-route-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    }
+</div>

@@ -22,51 +22,93 @@ namespace PetManagementSystem.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
-            var vaccinations = await _service.GetAllAsync();
-            return Ok(vaccinations);
+            try
+            {
+                var vaccinations = await _service.GetAllAsync();
+                return Ok(vaccinations);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
-            var vaccination = await _service.GetByIdAsync(id);
-            return Ok(vaccination);
+            try
+            {
+                var vaccination = await _service.GetByIdAsync(id);
+                return Ok(vaccination);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Create(WriteVaccinationDto dto)
         {
-            var createdVaccination = await _service.CreateAsync(dto);
+            try
+            {
+                var createdVaccination = await _service.CreateAsync(dto);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = createdVaccination.VaccinationId },
-                createdVaccination);
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = createdVaccination.VaccinationId },
+                    createdVaccination);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Update(int id, WriteVaccinationDto dto)
         {
-            var updatedVaccination = await _service.UpdateAsync(id, dto);
-            return Ok(updatedVaccination);
+            try
+            {
+                var updatedVaccination = await _service.UpdateAsync(id, dto);
+                return Ok(updatedVaccination);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Patch(int id, WriteVaccinationDto dto)
         {
-            var updatedVaccination = await _service.PatchAsync(id, dto);
-            return updatedVaccination == null ? NotFound() : Ok(updatedVaccination);
+            try
+            {
+                var updatedVaccination = await _service.PatchAsync(id, dto);
+                return updatedVaccination == null ? NotFound() : Ok(updatedVaccination);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
 
         [HttpGet("{id}/pets")]
         public async Task<IActionResult> GetPets(int id)
         {
-            var pets = await _service.GetPetsAsync(id);
-            return Ok(pets);
+            try
+            {
+                var pets = await _service.GetPetsAsync(id);
+                return Ok(pets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
     }
 }
